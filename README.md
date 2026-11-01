@@ -1,13 +1,14 @@
 # Titlivo
 
-**A land title that stays alive.** One parcel API across three Indian states, with title chains computed in SQL, cited answers in five languages, and a signed **Title Passport** that flips to SUSPENDED the moment the records show fraud.
+**A land title that stays alive.** One parcel API across three Indian states, with title chains and fraud checks computed in SQL, grounded answers in five languages, and a signed **Title Passport** that flips to SUSPENDED the moment the records change.
 
-![Status](https://img.shields.io/badge/status-working%20prototype-0B1736)
-![Tests](https://img.shields.io/badge/tests-28%20passing-2EC4A6)
-![Flags](https://img.shields.io/badge/red--flag%20recall-100%25-2EC4A6)
+![Status](https://img.shields.io/badge/status-live%20prototype-0B1736)
+![Tests](https://img.shields.io/badge/tests-29%20passing-2EC4A6)
+![Recall](https://img.shields.io/badge/fraud--rule%20recall-100%25-2EC4A6)
 ![Data](https://img.shields.io/badge/data-100%25%20synthetic-FF7A00)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB)
-![Postgres](https://img.shields.io/badge/PostgreSQL-17%20%2B%20PostGIS%20%2B%20pgvector-336791)
+![Postgres](https://img.shields.io/badge/PostgreSQL-17%20%2B%20PostGIS-336791)
+![Gemini](https://img.shields.io/badge/Gemini-3.8%20Flash-4285F4)
 ![AWS](https://img.shields.io/badge/AWS-ap--south--1%20Mumbai-FF9900)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -15,7 +16,7 @@
 
 ## See it working
 
-🌐 **Live demo: [main.d2md8dgohc7hhh.amplifyapp.com](https://main.d2md8dgohc7hhh.amplifyapp.com)** · API reference: [/docs](https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com/docs) · issuer: [`did.json`](https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com/.well-known/did.json)
+🌐 **Live demo: [main.d2md8dgohc7hhh.amplifyapp.com](https://main.d2md8dgohc7hhh.amplifyapp.com)** · API reference: [/docs](https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com/docs) · issuer keys: [`did.json`](https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com/.well-known/did.json)
 
 ▶️ **[2½-minute walkthrough (MP4)](https://github.com/Gurjas2112/Titlivo/releases/download/demo-media-v1/full-walkthrough.mp4)** · ▶️ **[Live revocation, split screen (25 s)](https://github.com/Gurjas2112/Titlivo/releases/download/demo-media-v1/live-revocation.mp4)** · [all clips](https://github.com/Gurjas2112/Titlivo/releases/tag/demo-media-v1) · [33 screenshots](demo-media/screenshots)
 
@@ -27,33 +28,35 @@
 |---|---|---|
 | ![Search](demo-media/screenshots/01-home-and-search/01-home.png) | ![Native 7/12](demo-media/screenshots/02-dossier/03-native-record.png) | ![Invalid](demo-media/screenshots/08-tamper/01-invalid-signature.png) |
 
-What works today (all on synthetic data, verified by tests):
+---
 
-- **270 parcels in 6 demo villages across MH, KA and GJ**, generated as native records in Marathi, Kannada and Gujarati with each state's units (hectare-are, acre-gunta, hectare-are-sq m) and date formats, then harmonised by YAML-driven adapters into one schema. The native record is always returned too.
-- **Title chain and 9 red-flag rules in SQL** (chain break, unreleased mortgage, litigation, area mismatch, restricted tenure, flipping, and the Fraud Sentinel patterns double sale, fake heirs, sale while mortgaged). Graded against 72 planted defects: **100 % recall and 100 % precision**.
-- **Title Passport**: a W3C Verifiable Credential (`vc+jwt`, Ed25519, `did:web`) with no names inside, Bitstring Status Lists for live status, verified **in the browser** against published keys. Injecting a registry event re-runs the rules and suspends passports **in one transaction**; open verifiers update in seconds.
-- **REST API** (search in any script, dossier, title chain, flags; masked names for anonymous callers; RFC 9457 errors; `X-Coverage` header; Scalar docs), **MCP server** for AI agents, **Postman collection** (23 assertions passing), **5 storytelling SQL queries**.
+## Highlights
+
+Every number below can be checked in this repo or on the live site.
+
+| | |
+|---|---|
+| 🗺️ **3 states, 3 record formats, 1 schema** | 270 parcels in 6 demo villages: Maharashtra 7/12 (Marathi, Devanagari numerals, hectare-are), Karnataka RTC (Kannada, acre-gunta), Gujarat 7/12 + 8-A (Gujarati, hectare-are-sq m), harmonised by YAML-driven adapters with **zero unknown terms** |
+| 🔎 **9 SQL rules, 100 % recall, 100 % precision** | Chain of title as a recursive CTE, 6 record checks and 3 Fraud Sentinel patterns (double sale, fake heirs, sale while mortgaged), graded in CI against **72 planted defects** |
+| 🛂 **Title Passport, verifiable by anyone** | W3C Verifiable Credential 2.0 (`vc+jwt`, Ed25519, `did:web`), **no names inside**, live status from Bitstring Status Lists, verified **in the browser** against published keys; a tampered passport fails |
+| ⚡ **Live revocation in one transaction** | A registry event re-runs every rule, flips the passport's status bit and records the change **atomically**; open verifier pages update over SSE within seconds |
+| 🗣️ **Grounded answers in 5 languages** | Gemini 3.8 Flash answers in English, Hindi, Marathi, Kannada and Gujarati; **every number is checked against the records** before it is shown, "safe" and "legal opinion" claims are rejected and retried; a prompt-injection attempt is caught |
+| 🤖 **Built for AI agents too** | An MCP server (Streamable HTTP, key auth) exposes the same service layer as the REST API, with the same name masking |
+| ☁️ **Production on AWS for ≈ US$11/month** | Lightsail container + Amplify + Supabase, secrets in SSM Parameter Store, SSO with MFA, no root keys, budget and anomaly alerts, one-command deploy |
+| 🚀 **Fast where it matters** | Dossier in ≈ 1.1 s across regions (from 7.7 s) through single-round-trip reads and parallel queries; data load in 4 s with pipelined inserts |
+| ✅ **Quality gates** | 29 tests, ruff, CI with secret scanning (gitleaks) and the defect gate, a Postman collection with 23 passing assertions, Playwright-captured screenshots with a blank-image check |
+| 📚 **Researched** | A ~2,000-line engineering specification, an ADR, a demo runbook and [44 annotated sources](docs/references.md) on land litigation, titling policy, DILRMP 3.0, Land Stack and 2026 fraud cases |
 
 ---
 
 ## Contents
 
-- [See it working](#see-it-working)
-- [The problem](#the-problem)
-- [What Titlivo does](#what-titlivo-does)
-- [The differentiator: Title Passport](#the-differentiator-title-passport)
-- [Architecture](#architecture)
-- [Tech stack](#tech-stack)
-- [Environments](#environments)
-- [API in 60 seconds](#api-in-60-seconds)
-- [Three-minute demo](#three-minute-demo)
-- [Design rules](#design-rules)
-- [Milestones](#milestones)
-- [Quickstart (local)](#quickstart-local)
-- [Production deployment](#production-deployment)
-- [Documentation](#documentation)
-- [References](#references)
-- [Data, licences and disclaimer](#data-licences-and-disclaimer)
+- [See it working](#see-it-working) · [Highlights](#highlights)
+- [The problem](#the-problem) · [What Titlivo does](#what-titlivo-does) · [The Title Passport](#the-title-passport)
+- [Architecture](#architecture) · [Tech stack](#tech-stack) · [API in 60 seconds](#api-in-60-seconds)
+- [Three-minute demo](#three-minute-demo) · [Design rules](#design-rules)
+- [Built](#built) · [Next](#next)
+- [Quickstart](#quickstart-local) · [Production](#production-deployment) · [Documentation](#documentation) · [References](#references)
 
 ---
 
@@ -64,32 +67,29 @@ What works today (all on synthetic data, verified by tests):
 - Maharashtra issues a **7/12** in *hectare-are*, with *भोगवटादार वर्ग* tenure classes.
 - Karnataka issues an **RTC (Pahani)** in *acre-gunta*.
 - Gujarat's **7/12 and 8-A** use *hectare-are-sq m*.
-- A *khasra* in one state is a *survey number* in another and a *dag* in a third.
+- The same document is a *Jamabandi* in Haryana, a *RoR* in Maharashtra and a *Pahani* in Karnataka.
 
-On top of that, **title diligence is disposable**. A buyer, the buyer's bank, a balance-transfer lender and an insurer each re-run the same search on the same parcel, and the PDF is out of date the day it's printed. Fraud happens *after* the check. In March 2026, Keesara police (Hyderabad) arrested five people who used forged death certificates and fake heirs to re-register other people's plots.
+On top of that, **title diligence is disposable**. A buyer, the buyer's bank, a balance-transfer lender and an insurer each re-run the same search on the same parcel, and the PDF is out of date the day it's printed. Fraud happens *after* the check: in March 2026, Keesara police (Hyderabad) arrested five people who used forged death certificates and fake heirs to re-register other people's plots. [More on the problem →](docs/references.md)
 
 ---
 
 ## What Titlivo does
 
-1. **Harmonise.** State adapters driven by YAML field maps convert native records into one canonical schema, aligned to DoLR's Glossary of Revenue Terms and keyed by LGD codes and a demo ULPIN. Geometry lives in PostGIS, and the native record is always returned next to the canonical one.
-2. **Reason in SQL.** A recursive CTE builds the chain of title. **16 rules** find red flags:
-   - **F01–F10, record checks:** chain break, unreleased mortgage, pending litigation, area mismatch, Class-II tenure, rapid flips, uncertified mutation, NA conversion, government land, name mismatch.
-   - **F11–F16, Fraud Sentinel cross-source rules:** double sale, heir-impersonation transfer, registration–revenue mismatch, GPA chain, dormant-parcel activation, sale while mortgaged.
-3. **Explain with citations.** A Pydantic AI agent on Gemini answers plain-language questions ("Is there a loan on this land?") using only tool output and a cited land-law knowledge base. The knowledge base covers the Registration Act, the Transfer of Property Act and the state codes, searched with hybrid pgvector + full-text search and rank fusion. A validator rejects any number, date or name that isn't in the tool output.
-4. **Serve integrators and agents.** A versioned REST API, PostGIS vector map tiles, bulk CSV lookup and an **MCP server**, so any MCP-capable AI agent can query parcels.
+1. **Harmonise.** State adapters driven by YAML field maps turn native records into one canonical schema, with a glossary of each state's own terms (aligned in spirit with DoLR's Glossary of Revenue Terms). Units, scripts, numerals and date formats are normalised; geometry lives in PostGIS, and the native record is always returned next to the canonical one.
+2. **Reason in SQL.** A recursive CTE walks the chain of title and checks every transfer against the holders recorded at the time. Nine rules raise red flags, each with plain-language text built only from its evidence and the source record id:
+   - **Record checks:** F01 chain break · F02 unreleased mortgage · F03 pending litigation · F04 recorded vs mapped area · F05 restricted tenure · F06 rapid resale.
+   - **Fraud Sentinel:** F11 double sale · F12 heir-impersonation transfer · F16 sale while mortgaged.
+3. **Explain, grounded.** "Ask the property" sends the parcel's SQL facts to Gemini with strict rules, then checks the answer: every number must exist in the records, and "safe", "clear title", "guaranteed" or "legal opinion" claims are rejected. One retry, then a template answer built straight from the facts.
+4. **Serve people, integrators and agents.** A web app for buyers and bank officers, a versioned REST API with OpenAPI docs and Postman tests for developers, and an MCP server for AI agents, all on one service layer.
 
-## The differentiator: Title Passport
+## The Title Passport
 
-A title check becomes a **signed, machine-verifiable credential**: a W3C Verifiable Credential 2.0, `vc+jwt`, EdDSA, issuer `did:web`.
+A title check becomes a **signed, machine-verifiable credential**.
 
-- **Issued once, verified by anyone** by QR, link or API, in seconds, without an account.
-- **Live status.** A W3C Bitstring Status List flips it to **SUSPENDED** automatically when monitoring sees a material change: a new transfer, a new charge, a court case, or a Fraud Sentinel pattern.
-- **Privacy by design.** The passport contains no names, only an owner count plus a salted commitment, check results with evidence digests, coverage and validity.
-- **Owner-controlled sharing.** An owner can grant a lender access to the full dossier, limited in time and purpose, with consent receipts. The lender subscribes to signed status webhooks (Standard Webhooks).
-- **Exactly-once delivery.** A material change commits the new event, the re-evaluated flags, the status-bit change and the notifications in **one Postgres transaction**. An outbox dispatcher (`FOR UPDATE SKIP LOCKED`) then delivers them. There's no Redis and no Kafka.
-
-In my research I found no product in India that packages multi-source title diligence as a portable credential with live revocation.
+- **Issued once, verified by anyone** by QR, link or API, in seconds, without an account. The browser checks the Ed25519 signature against the issuer's published `did.json`.
+- **Live status.** A W3C Bitstring Status List (131,072 entries in 16 KB) flips it to **SUSPENDED** when a material change appears in the records: a new transfer, a new charge, a court case or a Fraud Sentinel pattern.
+- **Privacy by design.** No names inside: an owner count plus a salted commitment, the result of every rule with a digest of its evidence, coverage, validity and a disclaimer.
+- **One transaction.** The new event, the re-evaluated flags, the status-bit change and the audit row commit together; notifications go out only after the commit.
 
 ---
 
@@ -98,95 +98,81 @@ In my research I found no product in India that packages multi-source title dili
 ```mermaid
 flowchart LR
     subgraph Clients
-        B[Buyer / citizen<br/>PWA, 5 languages]
-        L[Bank officer<br/>lender inbox]
-        D[Developer<br/>curl · Postman · MCP]
-        V[Anyone with a QR<br/>public verifier]
+        B[Buyer / bank officer<br/>web app, 5 languages]
+        V[Anyone with the QR<br/>public verifier]
+        D[Developer<br/>curl · Postman · /docs]
+        A[AI agent<br/>MCP client]
     end
 
-    subgraph Frontend["AWS Amplify Hosting (ap-south-1)"]
-        W[React 19 + Vite + MapLibre<br/>shadcn/ui · PWA]
+    subgraph Web["AWS Amplify Hosting · ap-south-1"]
+        W[React 19 + Vite + Tailwind 4<br/>MapLibre · jose verifier]
     end
 
-    subgraph Backend["Amazon ECS Express Mode · Fargate (ap-south-1)"]
-        API[FastAPI REST + SSE<br/>OpenAPI 3.1]
-        MCP[FastMCP server /mcp]
-        SVC[Service layer<br/>adapters · title chain · flags F01–F16<br/>agent · grounding · passports]
-        OUT[Outbox dispatcher<br/>SKIP LOCKED]
+    subgraph API["AWS Lightsail container · ap-south-1"]
+        R[FastAPI REST + SSE<br/>OpenAPI 3.1]
+        M[FastMCP server /mcp]
+        S[Service layer<br/>adapters · title chain · 9 rules<br/>passports · monitoring · Ask]
     end
 
-    subgraph Data["Supabase Pro (ap-south-1 Mumbai)"]
-        PG[(Postgres 17<br/>PostGIS · pgvector · pg_trgm)]
-        AUTH[Supabase Auth<br/>JWKS · Google · TOTP]
+    subgraph Data["Supabase Postgres 17"]
+        PG[(PostGIS · pg_trgm<br/>hand-written SQL)]
     end
 
-    G[Gemini Flash + Embedding<br/>GCP project titlivodev]
-    WH[Lender webhooks<br/>+ e-mail]
+    SSM[AWS SSM Parameter Store<br/>secrets]
+    G[Gemini 3.8 Flash<br/>GCP project]
 
-    B & L --> W
+    B --> W
     V --> W
-    W --> API
-    D --> API
-    D --> MCP
-    API --> SVC
-    MCP --> SVC
-    SVC --> PG
-    SVC --> G
-    API --> AUTH
-    SVC --> OUT
-    OUT --> WH
+    W --> R
+    D --> R
+    A --> M
+    R --> S
+    M --> S
+    S --> PG
+    S --> G
+    SSM -. deploy-time .-> API
 ```
 
-Every surface (REST, agent tools and MCP) calls **the same service functions**, and tests prove parity, including name masking for anonymous callers.
+REST, MCP and the Ask feature call **the same service functions**, and tests check that anonymous callers get masked names everywhere.
 
 ---
 
 ## Tech stack
 
-| Layer | Choice |
+| Layer | In use |
 |---|---|
-| API | Python 3.12, FastAPI, Pydantic v2 (strict), `sse-starlette`, Scalar docs, RFC 9457 errors |
-| Database | Supabase Postgres 17 + PostGIS + pgvector + pg_trgm; **hand-written SQL** (no ORM); psycopg 3 |
-| Geo | Shapely 2, GeoPandas, pyproj, PostGIS `ST_AsMVT` vector tiles, MapLibre GL JS + OpenFreeMap |
-| Harmonisation | YAML field maps, `indic-transliteration` (ISO 15919), `rapidfuzz`, unit converters with property tests |
-| AI | Pydantic AI + Gemini Flash (temperature 0, structured output), Gemini Embedding (768-d), Docling on GPU for ingest, hybrid RAG with reciprocal-rank fusion |
-| Agents | FastMCP 3 (streamable HTTP), API-key bearer auth with scopes |
-| Credentials | W3C VC 2.0, VC-JOSE-COSE, Bitstring Status List v1.0, `joserfc` (server) + `jose` (browser), shared test vectors |
-| Frontend | React 19, Vite, TypeScript strict, Tailwind v4, shadcn/ui, TanStack Query, installable PWA |
-| Auth | Supabase Auth: publishable/secret keys, asymmetric JWTs verified via JWKS, Google sign-in, TOTP for staff, RLS |
-| Quality | pytest, Hypothesis, Playwright, Vitest, Locust, **promptfoo** (RAG, agent, red team), ruff, mypy strict, `gitleaks` |
-| Observability | OpenTelemetry → Grafana (`otel-lgtm` locally, Grafana Cloud in production), LLM token, cost and grounding metrics |
-| Production | ECR → ECS Express Mode, Amplify Hosting, Secrets Manager, GitHub Actions OIDC, CloudWatch |
-
-## Environments
-
-| | Local | Staging | Production |
-|---|---|---|---|
-| API / web | Laptop (WSL2) | Laptop with staging config | ECS Express + Amplify, **Mumbai** |
-| Database + Auth | Supabase CLI | Supabase free project (Sydney) | Supabase Pro, **Mumbai** |
-| E-mail | Mailpit | Mailpit | Resend |
-| Secrets | `.env` (git-ignored) | `.env.staging` (git-ignored) | AWS Secrets Manager |
-
-Details: [spec §15.0](docs/03_Titlivo_Engineering_Specification_v2.1.md#150-environments).
+| API | Python 3.12, FastAPI, Pydantic v2, `sse-starlette`, Scalar docs, RFC 9457 errors, `X-Coverage` header |
+| Database | PostgreSQL 17 + PostGIS + pg_trgm (Supabase in production, Docker locally); **hand-written SQL files**, psycopg 3 with pipelining |
+| Harmonisation | YAML field maps, `indic-transliteration` (ISO 15919), unit converters for hectare-are, acre-gunta and hectare-are-sq m |
+| Credentials | W3C VC 2.0 as `vc+jwt`, Ed25519 (`joserfc` on the server, `jose` in the browser), `did:web`, Bitstring Status List v1.0, QR codes |
+| AI | Gemini 3.8 Flash (`google-genai`), temperature 0, low thinking level, grounding validator with retry and template fallback |
+| Agents | FastMCP (Streamable HTTP), bearer-key auth with scopes |
+| Frontend | React 19, Vite, TypeScript, Tailwind CSS 4, MapLibre GL + OpenFreeMap, React Router |
+| Quality | pytest, ruff, Playwright (screenshots and recordings), newman (Postman), GitHub Actions, gitleaks |
+| Production | AWS Lightsail containers, Amplify Hosting, SSM Parameter Store, IAM Identity Center (SSO + MFA), AWS Budgets |
 
 ---
 
 ## API in 60 seconds
 
 ```bash
-API=http://localhost:8000
+API=https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com   # or http://localhost:8000
 
 # Search in any script; names are masked for anonymous callers
 curl -s "$API/v1/parcels/search?q=214/2"
 curl -s "$API/v1/parcels/search" -G --data-urlencode "q=नितीन भोसले"
 
 # Full dossier: canonical + native record, title chain, flags, coverage
-curl -s "$API/v1/parcels/DEMO-27TEK337Z567G4" -H "Authorization: Bearer $TITLIVO_KEY"
+curl -s "$API/v1/parcels/DEMO-27TEK337Z567G4"
 
 # Red flags only, each with evidence and the source record id
 curl -s "$API/v1/parcels/DEMO-27TEK337Z567G4/flags"
 
-# Issue a Title Passport, then verify it (no account needed to verify)
+# Ask in Marathi; the answer is checked against the records before it is returned
+curl -s -X POST "$API/v1/ask" -H "Content-Type: application/json" \
+  -d '{"parcel_id":"DEMO-27TEK337Z567G4","language":"mr","question":"या जमिनीवर कर्ज आहे का?"}'
+
+# Issue a Title Passport, then verify it (no account needed)
 curl -s -X POST "$API/v1/parcels/DEMO-27TEK337Z567G4/passports"
 curl -s -X POST "$API/v1/passports/verify" -H "Content-Type: application/json" -d '{"jwt":"<token>"}'
 # → {"status":"LIVE","signature":"valid","issuer":"did:web:…", …}
@@ -196,70 +182,61 @@ curl -s "$API/status/1"
 curl -s "$API/.well-known/did.json"
 ```
 
-MCP: `npx @modelcontextprotocol/inspector`, transport *Streamable HTTP*, URL `$API/mcp/`, header `Authorization: Bearer $TITLIVO_KEY`. Tools today: `search_parcels`, `get_parcel_dossier`, `get_title_chain` and `list_red_flags` (`explain_term` and `search_land_law` arrive with the knowledge base). Or run `uv run --directory api python -m titlivo.tools.mcp_demo`.
+**MCP:** `npx @modelcontextprotocol/inspector`, transport *Streamable HTTP*, URL `$API/mcp/`, header `Authorization: Bearer <key>`. Tools: `search_parcels`, `get_parcel_dossier`, `get_title_chain`, `list_red_flags`. Or run `uv run --directory api python -m titlivo.tools.mcp_demo`.
 
-Every response carries an `X-Coverage` header. The full endpoint list is in [spec Annexure A](docs/03_Titlivo_Engineering_Specification_v2.1.md#annexure-a-api-reference-summary).
+**Postman:** import [`postman/titlivo.postman_collection.json`](postman/): 18 requests, 23 assertions, including the full issue → suspend → reset sequence.
 
 ---
 
 ## Three-minute demo
 
-"A title check that stays alive":
+"A title check that stays alive" ([full runbook](docs/runbooks/demo.md)):
 
-1. **0:00**: Every bank re-runs title checks on the same land, and the report is stale the day it's printed.
-2. **0:20**: Search a Maharashtra parcel. The dossier shows red flags in plain language. Ask in Marathi, "Is there a loan on this land?", and get a cited answer.
-3. **0:55**: **Issue a Title Passport.** Scan the QR with a phone: **LIVE, signature valid**. No login needed.
-4. **1:20**: **Share with a lender** (purpose: home loan, 7 days). It appears in the lender inbox.
-5. **1:40**: Admin panel: inject "sale by newly added heirs". Fraud Sentinel raises **F12**, the phone flips to **SUSPENDED** within seconds, and the lender's webhook arrives.
-6. **2:15**: Developer view: `curl`, then MCP Inspector → `list_red_flags`. A Karnataka parcel returns the same JSON shape.
-7. **2:40**: Diligence done once, verifiable by anyone, and alive.
-
-Steps 4 (lender sharing) and the lender webhook are on the roadmap; everything else above runs today. The full runbook, including how to reset between runs, is in [docs/runbooks/demo.md](docs/runbooks/demo.md).
-
-The demo media is generated from the running app by Playwright, never hand-edited (`npm run demo:shots`, `demo:record`, `demo:mp4`, `demo:verify`):
-
-- 33 flow-wise screenshots at laptop and phone sizes, with captions in `demo-media/manifest.json`;
-- a chaptered walkthrough, a split-screen live-revocation clip and one clip per chapter;
-- a check that rejects blank or duplicate screenshots.
+1. **0:00** Every bank re-runs title checks on the same land, and the report is stale the day it's printed.
+2. **0:20** Search in Marathi or by survey number. The dossier shows the record as the state wrote it, next to one clean schema.
+3. **0:50** Red flags in plain language: the fake-heir pattern caught on another parcel, with evidence and source.
+4. **1:10** Ask in Marathi, "Is there a loan on this land?": a grounded, cited answer.
+5. **1:25** **Issue a Title Passport.** Scan the QR: **LIVE, signature valid**. No login.
+6. **1:45** Inject a fake-heir sale into the registry. The verifier flips to **SUSPENDED** within seconds.
+7. **2:10** Edit one character of the passport: **INVALID SIGNATURE**.
+8. **2:25** Developers: `curl`, the API docs, and an AI agent calling the MCP server.
 
 ---
 
 ## Design rules
 
-1. **Facts come from SQL, never from the model.** The LLM phrases; it never computes owners, dates, amounts or flags.
-2. **Grounded or not sent.** Every number, date and name in an answer must appear in that turn's tool output. Otherwise the agent retries once, then falls back to a template.
-3. **Cite everything.** Record facts cite the source record ID; legal statements cite act, section and a verbatim quote.
-4. **Never "safe".** Titlivo says "No red flags found in the records available to Titlivo (coverage: …)". Reports are drafts for an advocate, not legal opinions.
-5. **Mask by default.** Anonymous callers get masked names on every surface: REST, UI, MCP and agent tools.
-6. **Untrusted text is data.** Free text from records is quoted, never followed: a prompt-injection red team runs in CI.
+1. **Facts come from SQL, never from the model.** The model phrases; it never computes owners, dates, amounts or flags.
+2. **Grounded or not sent.** Every number in an answer must appear in that turn's facts; otherwise one retry, then a template answer.
+3. **Cite the source.** Every flag carries its evidence and the source record id; answers cite entry (mutation) numbers.
+4. **Never "safe".** Titlivo says "No red flags found in the records available to Titlivo (coverage: …)". Passports say they are not a guarantee or a legal opinion.
+5. **Mask by default.** Anonymous callers get masked names on every surface: REST, web, MCP and Ask.
+6. **Untrusted text is data.** Record remarks (some contain planted injection strings) are passed as quoted data, never as instructions.
 7. **Synthetic only.** No real people, records or government logos.
 
 ---
 
-## Milestones
+## Built
 
-| # | Milestone | Status |
-|---|---|---|
-| — | Engineering specification v2.1 (production-ready, mapped to provisioned accounts) | ✅ Done |
-| M0 | Scaffold, Makefile, CI (ruff, pytest, defect gate, gitleaks), `/healthz` | ✅ Done |
-| M1 | Migrations, synthetic generator with planted defects (6 demo villages, 270 parcels) | ✅ Done · real datameet village polygons next |
-| M2 | Units, transliteration, glossary, three state adapters | ✅ Done |
-| M3 | Title chain SQL + flags + defect gate (100 % recall, 100 % precision) | ✅ F01–F06 · F07–F10 next |
-| M4 | Masking, REST parcels endpoints, problem+json, coverage header | ✅ Demo API keys · Supabase Auth sign-in next |
-| M5 | Vector tiles (p95 < 150 ms) | GeoJSON layer today · MVT next |
-| M6 | Web: search, map, dossier, timeline, flags, Show API call | ✅ Done · glossary page next |
-| M7 | Land-law knowledge base + hybrid search (≥ 90 % section hit) | Planned |
-| M8 | Cited agent + grounding validator | ✅ Gemini 3.8 Flash live: answers in en/hi/mr/kn/gu, number-by-number grounding check, banned-wording check with one retry, template fallback · streaming, answer cache and evals next |
-| M9 | MCP server (4 tools, key auth) | ✅ Done |
-| M10 | Title draft PDF + bulk lookup | Planned |
-| M11 | Red team, admin console, telemetry | Admin demo panel done · rest planned |
-| M13 | Title Passport (signing, status lists, Python + browser verifiers, QR, verifier page) | ✅ Done |
-| M14 | Fraud Sentinel + live monitoring + suspension in one transaction | ✅ F11, F12, F16 · F13–F15, outbox webhooks, share grants, lender inbox next |
-| M15a | Staging on Supabase cloud + secret scanning | gitleaks in CI ✅ · staging next |
-| M15b | Production deploy (AWS Mumbai, lowest-cost: Lightsail container + Amplify + Supabase; secrets in SSM; root keys removed; SSO + MFA) | ✅ Live · database moves to Mumbai next |
-| M12 | Docs, Postman collection, Jupyter notebooks | ✅ Postman (23 assertions) · notebooks next |
-| M16 | Demo media: screenshots, walkthrough, clips | ✅ 33 screenshots, 3 videos · 65-item coverage next |
-| M17 | Story film | Planned |
+- **Data and harmonisation:** synthetic generator (6 villages, 270 parcels, 30-year histories, 72 planted defects), 3 state adapters, glossary, unit and numeral normalisation, cross-script name search.
+- **Reasoning:** title-chain CTE, 9 red-flag rules, defect gate in CI (100 % recall and precision).
+- **REST API:** search, dossier (canonical + native), title chain, flags, map layer, coverage, glossary, Ask, passports, status lists, DID document, SSE streams, admin event injection and reset.
+- **Title Passport:** signing, status lists, Python and browser verifiers, QR, public mobile verifier, `.jwt` download, tamper detection.
+- **Live monitoring:** registry-event injection (fake heirs, double sale, new mortgage, court case), atomic re-evaluation and suspension, live verifier updates, demo reset.
+- **Ask the property:** Gemini 3.8 Flash in 5 languages with a grounding validator, banned-claim check, retry and template fallback.
+- **MCP server:** 4 tools with key auth and masking, plus a demo client.
+- **Web app:** search, map with severity colours, dossier with timeline and flag evidence, native vs canonical view, "Show API call", passport card, verifier, developer and admin pages, answer-language picker.
+- **Production:** live on AWS Mumbai (Lightsail + Amplify) with Supabase; secrets in SSM; SSO + MFA; root keys removed; budget alerts; one-command deploy script.
+- **Proof and docs:** 29 tests, CI (lint, tests, defect gate, secret scan), Postman collection, 5 storytelling SQL queries, 33 screenshots, 3 videos plus chapter clips, demo runbook, ADR, two engineering specs, 44-source reference list.
+
+## Next
+
+Designed in the [engineering specification](docs/03_Titlivo_Engineering_Specification_v2.1.md) and planned in this order:
+
+1. **Land-law knowledge base:** acts and state revenue codes ingested with Docling, hybrid vector + full-text search, cited law answers, two more MCP tools (spec §6.4).
+2. **Title-draft PDF and bulk lookup:** an advocate-ready draft report and a 200-row CSV check (§6.8, §6.9).
+3. **Lender workflow:** owner-controlled share grants with consent receipts, signed status webhooks through a transactional outbox, a lender inbox, and Fraud Sentinel rules F13–F15 (§6.11–6.13).
+4. **Accounts:** Supabase sign-in (e-mail, Google), MFA for staff, per-user API keys (§9).
+5. **Scale and polish:** vector tiles, real village boundaries, rules F07–F10, streaming answers with a cache, answer evals and a prompt-injection test suite, telemetry dashboards, the database moved to Mumbai.
 
 ---
 
@@ -273,24 +250,30 @@ cp .env.example .env
 make db          # PostGIS on :54329
 make keys        # Ed25519 passport signing key + demo API keys → .env (git-ignored)
 make data        # generate synthetic records → migrate → ingest → defect gate
-make test        # 28 tests
+make test        # 29 tests
 make api         # API on :8000  (docs at /docs, MCP at /mcp/)
 cd web && npm install && npm run dev   # web on :5173
 ```
 
-Your developer key (`DEMO_API_KEY`) and admin key (`ADMIN_API_KEY`) are in `.env`. The admin key unlocks the "Admin demo" page. Step-by-step set-up for the full system: [spec §12.3](docs/03_Titlivo_Engineering_Specification_v2.1.md#123-installation-gated).
+Your developer key (`DEMO_API_KEY`) and admin key (`ADMIN_API_KEY`) are in `.env`; the admin key unlocks the "Admin demo" page. Add `GOOGLE_API_KEY` for Gemini answers; without it, Ask uses template answers built from the SQL facts.
 
 ## Production deployment
 
-The production target is AWS Mumbai (ap-south-1):
+Lowest-cost production in AWS Mumbai (ap-south-1), about **US$11 a month**:
 
-- **ECS Express Mode** (Fargate, autoscaling 1–3 tasks, HTTPS load balancer) for the API;
-- **Amplify Hosting** for the web app;
-- **Supabase Pro** in Mumbai, so data stays in India;
-- **Secrets Manager** for every secret;
-- deploys from **GitHub Actions** using OIDC, so no long-lived AWS keys exist.
+- **API:** AWS Lightsail container service (`micro`), HTTPS endpoint, health-checked rolling deploys.
+- **Web:** AWS Amplify Hosting with SPA routing.
+- **Database:** Supabase Postgres (PostGIS, pg_trgm).
+- **Secrets:** AWS SSM Parameter Store (`/titlivo/prod/*`), never in Git or images; separate passport keys per environment.
+- **Access:** IAM Identity Center with MFA; root access keys deleted; US$15 budget plus cost-anomaly alerts.
 
-The runbook separates account-owner actions (H1–H9) from commands a coding agent can run, and ends with a go-live checklist. See [spec §15.2–15.3](docs/03_Titlivo_Engineering_Specification_v2.1.md#152-production-deployment-on-aws-mumbai-live-link).
+One command builds, pushes and deploys everything, then smoke-tests the live URLs:
+
+```bash
+AWS_PROFILE=titlivo bash scripts/deploy.sh            # flags: --skip-data --skip-image --skip-web
+```
+
+The design for scaling up (ECS Express Mode, Secrets Manager, GitHub OIDC deploys) is in [spec §15](docs/03_Titlivo_Engineering_Specification_v2.1.md#15-deployment-and-operations).
 
 ---
 
@@ -298,28 +281,25 @@ The runbook separates account-owner actions (H1–H9) from commands a coding age
 
 | Document | What it covers |
 |---|---|
-| [Engineering specification v2.1](docs/03_Titlivo_Engineering_Specification_v2.1.md) | **Current baseline**: requirements, architecture, data model, security, environments, AWS runbook, test strategy, demo plan, 65-item coverage matrix |
+| [Engineering specification v2.1](docs/03_Titlivo_Engineering_Specification_v2.1.md) | Requirements, architecture, data model, security, environments, deployment runbook, test strategy, demo plan |
 | [Engineering specification v2.0](docs/02_Titlivo_Engineering_Specification_v2.0.md) | Previous baseline, kept for history |
-| [References](docs/references.md) | Research, publications and news on land records, titling and fraud |
-
+| [References](docs/references.md) | 44 annotated sources: research, government reports and news on land records, titling and fraud |
 | [Demo runbook](docs/runbooks/demo.md) | How to run, present and reset the 3-minute demo |
-| [Postman collection](postman/) | 18 requests with tests, local environment |
+| [Postman collection](postman/) | 18 requests with tests and a local environment |
 | [Storytelling SQL](sql/demo/) | 5 queries a lender, buyer or analyst would ask |
 | [ADR-0001](docs/adr/0001-ed25519-algorithm-name.md) | Why the passport header says `Ed25519` rather than `EdDSA` |
 
-Planned with the build: `docs/mcp.md`, `docs/integrate-lender.md`, `docs/security-faq.md`, `docs/model-card.md` and `notebooks/`.
-
 ## References
 
-The problem in numbers and news: land disputes in Indian courts, presumptive vs conclusive titles, the national Land Stack and DILRMP 3.0, the Glossary of Revenue Terms, and 2026 fake-heir fraud cases. See **[docs/references.md](docs/references.md)** for 40+ annotated sources (research papers, government reports and news).
+The problem in numbers and news: land disputes in Indian courts, presumptive vs conclusive titles, the national Land Stack and DILRMP 3.0, the Glossary of Revenue Terms, and 2026 fake-heir fraud cases. See **[docs/references.md](docs/references.md)**.
 
 ## Data, licences and disclaimer
 
 - **All parcel, owner and transaction data is synthetic.** IDs start with `DEMO-`, and every record carries `synthetic: true`.
-- The six villages and their parcel boundaries are generated (fictional villages at plausible locations, marked "demo"). Real village boundaries from datameet (ODbL) are on the roadmap. Basemap © OpenStreetMap contributors, OpenFreeMap.
+- The six villages and their parcel boundaries are generated (fictional villages at plausible locations, marked "demo"). Basemap © OpenStreetMap contributors, OpenFreeMap.
 - Titlivo is a prototype. A Title Passport attests only to the records Titlivo has seen. It is **not** a guarantee, a certificate of title, a legal digital signature or a legal opinion.
 - Code is under the [MIT License](LICENSE).
 
 ---
 
-**Author:** Gurjas Gandhi, [github.com/Gurjas2112](https://github.com/Gurjas2112)
+**Author:** Gurjas Gandhi · [github.com/Gurjas2112](https://github.com/Gurjas2112)
