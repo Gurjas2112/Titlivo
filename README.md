@@ -11,8 +11,6 @@
 ![AWS](https://img.shields.io/badge/AWS-ap--south--1%20Mumbai-FF9900)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> A portfolio project for the **Associate Solutions Engineer** role at **[Landeed](https://www.landeed.com/) (YC S22)**, Hyderabad.
-
 ---
 
 ## See it working
