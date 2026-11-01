@@ -159,7 +159,7 @@ export default function Parcel() {
           </div>
 
           <PassportCard parcelId={d.id} existing={d.passports} />
-          <AskBox parcelId={d.id} />
+          <AskBox parcelId={d.id} defaultLang={lang} />
           <ApiCall path={`/v1/parcels/${d.id}`} keyHint />
           <p className="text-[11px] text-slate-400">{d.disclaimer}</p>
         </div>

@@ -11,9 +11,17 @@ interface Answer {
 }
 
 const SUGGESTED = ['Is there a loan on this land?', 'Who owns this land?', 'Is there any court case?', 'What is the sale history?']
+const LANGS = [
+  ['en', 'English'],
+  ['hi', 'हिंदी'],
+  ['mr', 'मराठी'],
+  ['kn', 'ಕನ್ನಡ'],
+  ['gu', 'ગુજરાતી'],
+] as const
 
-export default function AskBox({ parcelId }: { parcelId: string }) {
+export default function AskBox({ parcelId, defaultLang = 'en' }: { parcelId: string; defaultLang?: string }) {
   const [q, setQ] = useState('')
+  const [lang, setLang] = useState(defaultLang)
   const [a, setA] = useState<Answer | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -21,7 +29,7 @@ export default function AskBox({ parcelId }: { parcelId: string }) {
     setQ(question)
     setBusy(true)
     try {
-      setA(await api<Answer>('/v1/ask', { method: 'POST', body: JSON.stringify({ parcel_id: parcelId, question, language: 'en' }) }))
+      setA(await api<Answer>('/v1/ask', { method: 'POST', body: JSON.stringify({ parcel_id: parcelId, question, language: lang }) }))
     } finally {
       setBusy(false)
     }
@@ -44,6 +52,19 @@ export default function AskBox({ parcelId }: { parcelId: string }) {
           placeholder="Is there a loan on this land?"
           className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-navy"
         />
+        <select
+          value={lang}
+          onChange={(e) => setLang(e.target.value)}
+          aria-label="Answer language"
+          className="rounded-xl border border-slate-300 bg-white px-2 text-sm"
+          data-testid="ask-lang"
+        >
+          {LANGS.map(([code, label]) => (
+            <option key={code} value={code}>
+              {label}
+            </option>
+          ))}
+        </select>
         <button className="btn-primary" disabled={busy}>
           {busy ? '…' : 'Ask'}
         </button>
@@ -57,7 +78,7 @@ export default function AskBox({ parcelId }: { parcelId: string }) {
       </div>
       {a && (
         <div className="mt-4 rounded-xl bg-paper p-4" data-testid="answer">
-          <p className="text-sm leading-relaxed">{a.text}</p>
+          <p lang={lang} className="text-sm leading-relaxed">{a.text}</p>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {a.citations.slice(0, 4).map((c) => (
               <span key={c.ref} className={`chip ${c.kind === 'record' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}>
