@@ -30,7 +30,8 @@ def run(url: str) -> dict[str, Any]:
     issues: Counter[str] = Counter()
     stats: Counter[str] = Counter()
 
-    with psycopg.connect(url, prepare_threshold=None) as conn, conn.transaction():
+    # Pipeline mode sends statements without waiting for each reply: fast even to a distant database.
+    with psycopg.connect(url, prepare_threshold=None) as conn, conn.transaction(), conn.pipeline():
         conn.execute(
             "truncate titlivo.passport_events, titlivo.passports, titlivo.parcel_flags, titlivo.litigation, "
             "titlivo.encumbrances, titlivo.title_events, titlivo.holdings, titlivo.parcels, titlivo.parties, "
