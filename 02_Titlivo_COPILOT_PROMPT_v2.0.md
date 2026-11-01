@@ -19,7 +19,7 @@ You are a senior Python, SQL/PostGIS and TypeScript engineer building **Titlivo*
 - **Title Passports**: W3C Verifiable Credential 2.0 (`vc+jwt`, EdDSA) with **live status** via a Bitstring Status List, publicly verifiable by QR/link/API;
 - **Fraud Sentinel** rules F11–F16 and **living monitoring** that suspends passports and notifies lenders through a Postgres **transactional outbox**.
 
-It is a land-records prototype and a portfolio piece for a Solutions Engineer role. The same parcel must be demo-able to a buyer, a bank officer and a developer.
+It is a land-records prototype. The same parcel must be demo-able to a buyer, a bank officer and a developer.
 
 **Prototype scope (do not exceed):** states MH (LGD 27), KA (29), GJ (24); 6 villages per state with real polygons (datameet, ODbL) and **synthetic** parcels, owners and history; English UI; answers in en/hi/mr/kn/gu; laptop (WSL2 Ubuntu 22.04, Docker Engine) + **production deployment on AWS Mumbai**: backend on **Amazon ECS Express Mode (Fargate)**, frontend on **AWS Amplify Hosting**, **Supabase Pro (ap-south-1)**. **No OCR, no prediction, no Redis/Celery** (background work = Postgres outbox + in-process async dispatcher).
 
@@ -160,7 +160,7 @@ Web: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_URL`, `VITE_MAP_ST
 - `sql/title_chain.sql`: recursive CTE ordered by `registered_on`, carrying the holder set; outputs `consistent` per event.
 - `config/flags.yaml` defines F01–F10 (spec 6.2) with `severity`, `sql` (file reference) and `template` in en and hi. `services/flags.py` runs them and returns `Flag{id, severity, text, evidence, source_record_id}`.
 - `tools/check_defects.py` compares planted defects with detected flags: **recall 100 %, precision ≥ 98 %** or exit non-zero (CI gate).
-- `sql/demo/*.sql`: 10 readable storytelling queries with comments (for the interview).
+- `sql/demo/*.sql`: 10 readable storytelling queries with comments (for walkthroughs).
 
 ## 8. Knowledge base and agent
 
@@ -236,7 +236,7 @@ Routes: `/`, `/p/:parcelId`, `/compare`, `/law`, `/glossary`, `/bulk`, `/develop
 ## 12. Auth, security and data
 
 - Supabase Auth: email+password (≥ 12) and Google; TOTP required for `platform_admin`.
-- `supabase/shared/auth_hook.sql` is **identical across the three portfolio repos**: `public.app_memberships(user_id, app, org_id, role, scope jsonb)` + `public.custom_access_token_hook` → `claims.app_roles[app] = {org_id, role} || scope`; idempotent; grants to `supabase_auth_admin` only.
+- `supabase/shared/auth_hook.sql` is a **reusable shared file**: `public.app_memberships(user_id, app, org_id, role, scope jsonb)` + `public.custom_access_token_hook` → `claims.app_roles[app] = {org_id, role} || scope`; idempotent; grants to `supabase_auth_admin` only.
 - RLS on all tables; `anon` reads only `titlivo.v_parcel_public` (masked via `titlivo.mask_name()`).
 - Keys: scopes `parcels:read`, `parcels:pii`, `ask`, `bulk`, `mcp`; hashed; last-used; revocable.
 - Query log stores the question hash, language, tools, tokens and latency; never the raw question for anon; no user IDs sent to Gemini.

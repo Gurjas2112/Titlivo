@@ -39,7 +39,6 @@ What works today (all on synthetic data, verified by tests):
 ## Contents
 
 - [See it working](#see-it-working)
-- [Why I built this for Landeed](#why-i-built-this-for-landeed)
 - [The problem](#the-problem)
 - [What Titlivo does](#what-titlivo-does)
 - [The differentiator: Title Passport](#the-differentiator-title-passport)
@@ -53,36 +52,8 @@ What works today (all on synthetic data, verified by tests):
 - [Quickstart (local)](#quickstart-local)
 - [Production deployment](#production-deployment)
 - [Documentation](#documentation)
+- [References](#references)
 - [Data, licences and disclaimer](#data-licences-and-disclaimer)
-
----
-
-## Why I built this for Landeed
-
-Landeed sells "property records from every state through one integration", an API and MCP for enterprises, and Terra, which answers questions about ownership in plain language. A solutions engineer at Landeed has to **show** that to a bank, a developer and a buyer, often in the same meeting. Titlivo is a working model of that job: one parcel, three audiences, every claim traceable to a record.
-
-| What the JD asks for | Where Titlivo shows it |
-|---|---|
-| **Build and maintain demo environments and prototypes** for enterprise use cases | Three environments (local, staging, production on AWS Mumbai); a one-click "Tour: one parcel, three audiences"; a lender inbox and an admin "inject registry event" panel built for live demos |
-| **Run live API demos** for technical and non-technical people | The same parcel shown as a buyer (chat in Marathi), a bank officer (title draft PDF + passport) and a developer (`curl` + MCP Inspector) |
-| **Technical documentation**: integration guides, API walkthroughs, how-tos | [Engineering specification v2.1](docs/03_Titlivo_Engineering_Specification_v2.1.md) (~2,000 lines); planned `quickstart.md`, `integrate-lender.md` ("integrate with your loan system in a day"), `mcp.md`, passport verification guide, error catalogue, ADRs |
-| **Python**: hands-on | FastAPI service, state adapters, transliteration, Pydantic AI agent, FastMCP server, synthetic data generator, outbox dispatcher |
-| **SQL**: pull, filter and present data | Title chain as a recursive CTE; 16 red-flag rules as SQL files; `sql/demo/*.sql`, 10 storytelling queries ("parcels with an unreleased mortgage and ≥ 2 transfers in 3 years") |
-| **REST APIs**: requests and responses, Postman, curl, reading API docs | OpenAPI 3.1 with Scalar docs, RFC 9457 errors, ETags, SSE; a public **Postman** workspace with tests; a "Show API call" panel on every dossier |
-| **Explain technical ideas to non-technical audiences** | Plain-language flag cards, a cited Q&A agent, a 3-minute demo script, a chaptered walkthrough and a story film |
-| **Detail-oriented, documents work** | Every requirement traced to a test; a 65-item demo coverage matrix that fails the build if any feature is missing from the demo media |
-| *Nice to have:* Jupyter, GitHub, BI/data visualisation, small internal tools | 3 Jupyter notebooks (bank officer story, SQL insights, verify a passport); GitHub Actions CI with OIDC deploy; Grafana dashboards; bulk CSV lookup |
-| *Nice to have:* storytelling with data | Coverage map, flag distribution by state, a "what a bank sees" narrative |
-
-How it lines up with Landeed's product:
-
-| Landeed today | Titlivo equivalent |
-|---|---|
-| One integration for records from every state | One canonical API across Maharashtra, Karnataka and Gujarat |
-| `GET /v1/parcels/{survey}` with owner, litigation and encumbrances | `GET /v1/parcels/{id}` dossier with title chain and red flags |
-| Terra: ask in Indian languages, trace ownership | "Ask the Property" agent: answers in en/hi/mr/kn/gu, every fact cited |
-| Terra MCP for AI agents | FastMCP server with six read-only tools |
-| 30-year chain of title for banks | Deterministic title chain + title draft PDF + verifiable Title Passport |
 
 ---
 
@@ -329,6 +300,7 @@ The runbook separates account-owner actions (H1–H9) from commands a coding age
 |---|---|
 | [Engineering specification v2.1](docs/03_Titlivo_Engineering_Specification_v2.1.md) | **Current baseline**: requirements, architecture, data model, security, environments, AWS runbook, test strategy, demo plan, 65-item coverage matrix |
 | [Engineering specification v2.0](docs/02_Titlivo_Engineering_Specification_v2.0.md) | Previous baseline, kept for history |
+| [References](docs/references.md) | Research, publications and news on land records, titling and fraud |
 
 | [Demo runbook](docs/runbooks/demo.md) | How to run, present and reset the 3-minute demo |
 | [Postman collection](postman/) | 18 requests with tests, local environment |
@@ -336,6 +308,10 @@ The runbook separates account-owner actions (H1–H9) from commands a coding age
 | [ADR-0001](docs/adr/0001-ed25519-algorithm-name.md) | Why the passport header says `Ed25519` rather than `EdDSA` |
 
 Planned with the build: `docs/mcp.md`, `docs/integrate-lender.md`, `docs/security-faq.md`, `docs/model-card.md` and `notebooks/`.
+
+## References
+
+The problem in numbers and news: land disputes in Indian courts, presumptive vs conclusive titles, the national Land Stack and DILRMP 3.0, the Glossary of Revenue Terms, and 2026 fake-heir fraud cases. See **[docs/references.md](docs/references.md)** for 40+ annotated sources (research papers, government reports and news).
 
 ## Data, licences and disclaimer
 

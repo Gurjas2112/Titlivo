@@ -2,8 +2,6 @@
 
 **System Engineering Specification — Production-Ready Prototype Baseline (v2.1)**
 
-**Selected flagship** of the three-project portfolio, built to support an application for **Associate Solutions Engineer, Landeed (YC S22), Hyderabad**
-
 ![Titlivo](brand/titlivo-lockup-light.png)
 
 ---
@@ -23,14 +21,13 @@
 | Prepared by | Gurjas Gandhi |
 | Companion document | `AGENTS.md` / `.github/copilot-instructions.md` (Copilot build prompt v2.0). If the two disagree, **this specification wins**. Supersedes `02_Titlivo_Engineering_Specification_v2.0.md` |
 | Brand assets | `brand/`: icon, PNG sizes, favicon, light/dark lockups, social preview (see 7.8) |
-| Sister projects | Patrakshi (project 1, document extraction), BhuGhadi (project 3, acquisition risk). See 2.4 |
 
 ### Revision History
 
 | Version | Date | Description |
 |---|---|---|
 | 1.0 | 30 Oct 2026 | First baseline. Prototype scope; production path in Annexure B |
-| **2.0** | **31 Oct 2026** | **CR-01: Selected as the flagship project (Section 2.6). CR-02: Title Passport, a W3C Verifiable Credential 2.0 with Bitstring Status List live status (6.10). CR-03: Fraud Sentinel rules F11–F16 (6.11). CR-04: living monitoring with a transactional outbox (6.12). CR-05: production deployment on AWS Mumbai (ECS Express Mode + Amplify Hosting + Supabase Pro), replacing the Lightsail VM (15). CR-06: brand and logo (7.8). Railway and App Runner were rejected (15.2)** |
+| **2.0** | **31 Oct 2026** | **CR-02: Title Passport, a W3C Verifiable Credential 2.0 with Bitstring Status List live status (6.10). CR-03: Fraud Sentinel rules F11–F16 (6.11). CR-04: living monitoring with a transactional outbox (6.12). CR-05: production deployment on AWS Mumbai (ECS Express Mode + Amplify Hosting + Supabase Pro), replacing the Lightsail VM (15). CR-06: brand and logo (7.8). Railway and App Runner were rejected (15.2)** |
 | **2.1** | **1 Nov 2026** | **CR-07: environments mapped to the provisioned accounts (Supabase, GCP `titlivodev`, AWS) (15.0). CR-08: three environments, local → staging (existing Supabase project, Sydney) → production (new Supabase Pro project, Mumbai) (15.0). CR-09: Supabase publishable/secret API keys and asymmetric JWT signing keys via JWKS replace the legacy anon/service_role keys (9.1, 13.1). CR-10: Gemini API key from GCP project `titlivodev`, restricted to the Generative Language API (12.3, Step 6a). CR-11: Mailpit SMTP settings for local e-mail (12.3, 13.1). CR-12: secret hygiene: git-ignored local config, `gitleaks` in CI, key rotation before go-live (14.3, 15.3). CR-13: M15 split into M15a staging and M15b production (16.1). CR-14: demo-media gaps closed: blank-screenshot check, Remotion licence, tool sources (16.5, 16.6, Annexure C)** |
 
 ---
@@ -49,7 +46,7 @@ Title diligence in India is **disposable**:
 - **Owner-controlled sharing.** Owners share the full dossier with a lender under DPDP-style consent, and lenders subscribe to status webhooks.
 - **Fraud Sentinel rules.** Six cross-source rules catch the fraud patterns seen in real cases: double sale, heir-impersonation transfers, registration–revenue mismatch, GPA chains, dormant-parcel activation, and sale while mortgaged.
 
-In our research we found state QR codes on single records (Odisha, planned) and DigiLocker verification of government-issued documents. We found **no** product in India that packages multi-source title diligence as a portable, verifiable credential with live revocation. It fits Landeed's "OS for ownership" positioning. Every passport a bank verifies is a distribution channel, every live passport is recurring monitoring revenue, and a standard evidence format is what title insurers need to underwrite.
+In our research we found state QR codes on single records (Odisha, planned) and DigiLocker verification of government-issued documents. We found **no** product in India that packages multi-source title diligence as a portable, verifiable credential with live revocation. Every passport a bank verifies saves a repeated search, every live passport keeps watching the records, and a standard evidence format is what title insurers need to underwrite.
 
 "Land is a State subject." Every state keeps its records in its own format, units, language and vocabulary:
 
@@ -58,14 +55,14 @@ In our research we found state QR codes on single records (Odisha, planned) and 
 - Gujarat's **7/12 and 8-A** use *hectare-are-sq m*.
 - A *khasra* in one state is a *survey number* in another and a *dag* in a third.
 
-This fragmentation is exactly what DoLR's **Land Stack** pilot (launched 31 Dec 2025 in Chandigarh and Tamil Nadu) and its **Glossary of Revenue Terms** set out to fix. It is also the problem Landeed solves commercially with "property records from every state through one integration".
+This fragmentation is exactly what DoLR's **Land Stack** pilot (launched 31 Dec 2025 in Chandigarh and Tamil Nadu) and its **Glossary of Revenue Terms** set out to fix.
 
 **Titlivo** is a working model of that bridge for **three states** (Maharashtra, Karnataka, Gujarat). It has four layers:
 
 1. **Harmonise.** State adapters convert native records into one canonical, GoRT-aligned schema keyed by LGD codes and a demo ULPIN, with parcel geometry in PostGIS. Native terms are preserved alongside.
 2. **Reason deterministically.** SQL computes the **chain of title**, active encumbrances and **red flags**: chain breaks, unreleased mortgages, Class-II tenure, area mismatch between record and map, rapid flips, pending litigation.
 3. **Explain with citations.** An agent on **Gemini 3.8 Flash (Pydantic AI)** answers plain-language questions in the user's language ("Is there a loan on this land?"). It uses only tool results and a **cited land-law knowledge base**: the Registration Act, Transfer of Property Act, state land-revenue codes and the GoRT, retrieved with hybrid RAG. A validator rejects any number, date or name not found in tool output.
-4. **Serve integrators and agents.** A versioned **REST API**, vector map tiles, bulk lookup and a **FastMCP server**, so any MCP-capable AI agent can query parcels the way Terra MCP does.
+4. **Serve integrators and agents.** A versioned **REST API**, vector map tiles, bulk lookup and a **FastMCP server**, so any MCP-capable AI agent can query parcels.
 
 The design commitments are:
 
@@ -133,9 +130,6 @@ MUST/SHOULD as RFC 2119. IDs: `FR-`, `NFR-`, `SEC-`, `REG-`, red-flag rules `F01
 
 | ID | Reference | URL |
 |---|---|---|
-| RD-2 | Landeed job post | https://www.workatastartup.com/jobs/91926 |
-| RD-3 | Landeed Terra launch (YC Launches) | https://www.ycombinator.com/launches/Q4L-terra-turning-indian-property-from-a-who-you-know-market-into-a-what-you-know-market |
-| RD-4 | Landeed API & MCP / Land Intelligence | https://www.landeed.com/monitoring-compliance |
 | RD-5 | Land Stack pilot and Glossary of Revenue Terms (31 Dec 2025) | https://www.devdiscourse.com/article/law-order/3746323-centre-launches-land-stack-glossary-to-modernise-indias-land-governance |
 | RD-6 | DILRMP status: ULPIN 36 Cr+ parcels, 19 states with digitally signed RoRs | https://www.angelone.in/news/government-schemes/land-records-go-digital-19-states-enable-download-of-digitally-signed-legally-valid-records-under-dilrmp |
 | RD-7 | Pydantic AI Google models | https://pydantic.dev/docs/ai/models/google/ |
@@ -172,55 +166,12 @@ MUST/SHOULD as RFC 2119. IDs: `FR-`, `NFR-`, `SEC-`, `REG-`, red-flag rules `F01
 | Policy and research: GIS visualisation, dashboards | Map, coverage dashboard, admin console | 6.6, 10 |
 | Policy and research: Role-based access, APIs | Supabase Auth roles, API keys, MCP | 9 |
 
-### 2.3 Relevance to Landeed and the JD
-
-| Landeed today | Titlivo mirror |
-|---|---|
-| "Property records from every state through one integration" (API & MCP) | One canonical API across three states |
-| `GET /v1/parcels/{survey}` returning owner, zoning, litigation, feasibility | `GET /v1/parcels/{id}` dossier with flags |
-| Terra: ask in English, Hindi, Telugu, Tamil; traces ownership; checks encumbrances | Ask the Property agent with citations |
-| Terra MCP for agents | FastMCP server with six tools |
-| 30-year chain of title for banks | Deterministic title chain + draft PDF |
-
-| JD line | Titlivo artefact |
-|---|---|
-| Run live API demos for technical and non-technical stakeholders | Same parcel shown as a buyer (chat), a bank officer (PDF) and a developer (curl + MCP Inspector) |
-| Technical documentation | Quickstart, "Integrate Titlivo with your loan system in a day" guide, MCP guide, glossary page |
-| SQL for demos | `sql/demo/*.sql`: 10 storytelling queries (e.g. "parcels with an unreleased mortgage and ≥ 2 transfers in 3 years") |
-| Python and API integrations | Adapters, agent, MCP |
-| Storytelling with data | Coverage map, flag distribution by state, "what a bank sees" narrative |
-
-### 2.4 How Titlivo Differs from the Sister Projects
-
-| | Patrakshi | **Titlivo (this)** | BhuGhadi |
-|---|---|---|---|
-| Input | Scanned documents | **Structured records from many state formats** | Project workflow events |
-| Core technique | Document AI + validation | **Schema harmonisation + GIS + cited LLM agent + MCP** | ML risk + statutory clocks |
-| Output | Validated record | **Answers, dossiers, title drafts, tiles, MCP tools** | Alerts and dashboards |
-
-Titlivo performs **no OCR** (it consumes structured records), **no prediction** and **no workflow management**.
-
-### 2.5 Explicit Non-Claims
+### 2.3 Explicit Non-Claims
 No real records, no legal opinion, no guarantee of title, no official ULPINs (demo IDs are marked `DEMO-`). Coverage is always shown.
 
 ---
 
-### 2.6 Why Titlivo Was Selected as the Flagship
-
-A senior-engineer review of the three portfolio projects against what Landeed needs now:
-
-| Criterion (weight) | Patrakshi | **Titlivo** | BhuGhadi |
-|---|---|---|---|
-| Closeness to Landeed's current launches: Terra, API & MCP, chain of title, bank workflows (30 %) | Medium: ingestion is internal plumbing they already run | **High**: same buyers, same API shape, MCP | Low–medium: government LA cells are a smaller segment |
-| An unsolved problem worth a founder's attention (25 %) | Low: Indic OCR is crowded (Sarvam, Landeed's own) | **High: Title Passport + live status + fraud patterns** | Medium: statutory clocks are novel but niche |
-| Demo-ability to non-technical and technical audiences (20 %) | Medium | **High**: map, chat, QR verify, live revocation on a phone | Medium |
-| JD coverage: APIs, SQL, docs, prototypes, storytelling (15 %) | High | **High** | High |
-| Scalability of the idea (10 %) | Medium | **High**: verification is a signature check plus a cached bitstring | Medium |
-| **Weighted result** | 2nd | **1st** | 3rd |
-
-The other two specs stay in the portfolio as supporting work; Titlivo is the one to build first, deploy publicly and pitch.
-
-### 2.7 The Unsolved Problem, with Evidence
+### 2.4 The Unsolved Problem, with Evidence
 
 | Pain | Evidence | Title Passport answer |
 |---|---|---|
@@ -254,7 +205,7 @@ The other two specs stay in the portfolio as supporting work; Titlivo is the one
 
 **Scenario D: Dr Rao, policy researcher (`anonymous`).** She asks, "How does mutation work in Gujarat compared with Maharashtra?" and gets a side-by-side answer with section-level citations to both land-revenue codes and the GoRT definitions.
 
-**Scenario E: the interviewer.** Opens the live link, clicks **"Tour: one parcel, three audiences"**, and is walked through A → B → C in 3 minutes.
+**Scenario E: the evaluator.** Opens the live link, clicks **"Tour: one parcel, three audiences"**, and is walked through A → B → C in 3 minutes.
 
 ---
 
@@ -264,13 +215,13 @@ The other two specs stay in the portfolio as supporting work; Titlivo is the one
 
 | Capability | Needed? | Reason | Verdict |
 |---|---|---|---|
-| Public access without login | **Yes** | Citizen-centric; recruiters must try it instantly | Anonymous search, map, masked dossier, law Q&A |
+| Public access without login | **Yes** | Citizen-centric; evaluators must be able to try it instantly | Anonymous search, map, masked dossier, law Q&A |
 | Login / sign-up | **Yes** | Owner names are personal data; title drafts and bulk use need accountability | Supabase Auth: email + password and Google sign-in |
 | MFA | **Yes, for `bank_officer` and `platform_admin`** | Both can see unmasked names, bulk results, keys and usage | TOTP enforced (`aal2`); citizens use password + e-mail verification |
 | API keys | **Yes** | Integrator and MCP scenarios are the core demo | Org-scoped, hashed, scoped, revocable |
 | Admin dashboard | **Yes** | LLM cost, grounding failures, key usage, coverage freshness | In-app console + Grafana |
 | Background work | **Yes, light** | Passport monitoring and webhook delivery must survive restarts | **Transactional outbox in Postgres** + an in-process async dispatcher (`FOR UPDATE SKIP LOCKED`, safe with several ECS tasks). No Redis/Celery |
-| Payment gateway | **No** | The JD does not need money movement. The demo uses synthetic data, so nothing is sold. A gateway would add RBI payment-aggregator and PCI-DSS scope with no demo value | **Not built.** Passport issuance is free in the prototype |
+| Payment gateway | **No** | No money moves in the prototype. The demo uses synthetic data, so nothing is sold. A gateway would add RBI payment-aggregator and PCI-DSS scope with no demo value | **Not built.** Passport issuance is free in the prototype |
 
 ### 4.2 Functional Requirements
 
@@ -709,7 +660,7 @@ sequenceDiagram
 ## 7. User Interface and Experience Design
 
 ### 7.1 Design Thesis
-"**One parcel, three audiences.**" The same screen serves a first-time buyer (plain language, verdict chips), a bank officer (evidence, PDF) and a developer ("Show API call" reveals the exact request and JSON). This is the Solutions Engineer job in a single screen.
+"**One parcel, three audiences.**" The same screen serves a first-time buyer (plain language, verdict chips), a bank officer (evidence, PDF) and a developer ("Show API call" reveals the exact request and JSON). One screen, three audiences.
 
 ### 7.2 Information Architecture
 
@@ -776,7 +727,7 @@ The map always has a parcel **list view** alternative. Keyboard search (`/` focu
 - `vite-plugin-pwa`: `manifest.webmanifest` (name, `theme_color #0B1736`, icons 192/512 from `brand/`, `display: standalone`) and a service worker that precaches the app shell. API calls are never cached, so passport status is always live.
 - The passport QR encodes `https://<amplify-url>/v/<id>`. The phone's own camera app scans it and opens the verifier, so no in-app scanner is needed.
 - Every passport screen is designed at 390 px first. The live LIVE → SUSPENDED flip is demonstrated on a phone in the browser or as the installed PWA.
-- Why not native: a new personal Google Play account needs a closed test with at least 12 testers for 14 days before production. Recruiters will not side-load an APK. A native app adds no capability the demo needs: no background location, no offline maps, no device hardware.
+- Why not native: a new personal Google Play account needs a closed test with at least 12 testers for 14 days before production. Evaluators will not side-load an APK. A native app adds no capability the demo needs: no background location, no offline maps, no device hardware.
 
 ### 7.7 Title Passport Screens
 
@@ -929,7 +880,7 @@ create index on titlivo.outbox (next_attempt_at) where delivered_at is null;
 - Email + password (min 12) and **Google sign-in**.
 - TOTP enforced for `platform_admin` (`aal2`).
 - Self-sign-up creates a `citizen`. `bank_officer` membership is granted by an admin to a demo lender org.
-- Roles reach the JWT through the **shared custom access token hook** (`supabase/shared/auth_hook.sql`, identical in all three portfolio repos), which sets `app_roles.titlivo = {org_id, role}`.
+- Roles reach the JWT through the **shared custom access token hook** (`supabase/shared/auth_hook.sql`, a reusable shared file), which sets `app_roles.titlivo = {org_id, role}`.
 - **Key model (Supabase API keys + asymmetric JWT signing keys).** Each project uses the new **publishable key** (`sb_publishable_…`, safe in the browser, `VITE_SUPABASE_PUBLISHABLE_KEY`) and **secret key** (`sb_secret_…`, server only, `SUPABASE_SECRET_KEY`). The legacy `anon` / `service_role` JWT keys are not used. In each project, Settings → JWT Keys → **migrate to asymmetric signing keys (ES256)**, so tokens can be verified without a shared secret.
 - The API verifies user JWTs with PyJWT `PyJWKClient(settings.supabase_jwks_url)` (`https://<ref>.supabase.co/auth/v1/.well-known/jwks.json`), checking `aud = authenticated`, `iss = <SUPABASE_URL>/auth/v1` and `exp`, and caching the key set for 10 minutes. No JWT secret is stored anywhere.
 - **Google sign-in** needs an OAuth client per environment in GCP project `titlivodev` (APIs & Services → Credentials → *OAuth client ID*, type *Web application*). Authorised redirect URI: `https://<ref>.supabase.co/auth/v1/callback`. Paste the Client ID and Client Secret into Supabase → Authentication → Providers → Google. The Client Secret is generated by Google; it is never a password chosen by hand.
@@ -1316,7 +1267,7 @@ For **staging**, copy it to `.env.staging` and set `APP_ENV=staging`, `SUPABASE_
 **`.env.prod.example`** (non-secret values become ECS `environment`; every `<secret>` becomes a Secrets Manager entry with the same name)
 ```dotenv
 APP_ENV=prod
-DEMO_LOGIN=true                   # tour account stays on for recruiters; read-only bank_officer role
+DEMO_LOGIN=true                   # tour account stays on for evaluators; read-only bank_officer role
 AWS_REGION=ap-south-1
 PUBLIC_API_BASE=https://<ecs-express-endpoint>
 ISSUER_DID=did:web:<ecs-express-endpoint-host>
@@ -1382,7 +1333,7 @@ def test_rejects_invented_amount():
 ```
 
 ### 14.3 CI
-Same shape as Patrakshi: uv + pnpm, `supabase start` (without storage), migrations, ruff/mypy/pytest, `check_defects` on a 1-village synthetic subset, promptfoo **only on PRs that touch `config/prompts` or `services/agent*`**, using a CI secret and a capped budget, Playwright e2e against a mocked LLM (`LLM_MODE=mock`, recorded responses), and pip-audit/pnpm audit.
+uv + pnpm, `supabase start` (without storage), migrations, ruff/mypy/pytest, `check_defects` on a 1-village synthetic subset, promptfoo **only on PRs that touch `config/prompts` or `services/agent*`**, using a CI secret and a capped budget, Playwright e2e against a mocked LLM (`LLM_MODE=mock`, recorded responses), and pip-audit/pnpm audit.
 
 v2.1 additions:
 
@@ -1398,7 +1349,7 @@ v2.1 additions:
 
 | | **local** | **staging** | **production** |
 |---|---|---|---|
-| Purpose | Daily development, tests, KB ingest on the GPU, demo-media capture | Shared demo DB, Auth/Google sign-in trials, smoke tests before prod | Public live link for recruiters, Landeed and other reviewers |
+| Purpose | Daily development, tests, KB ingest on the GPU, demo-media capture | Shared demo DB, Auth/Google sign-in trials, smoke tests before prod | Public live link for users and evaluators |
 | API | `make dev` on the laptop (:8000) | Laptop API with `.env.staging` (optionally a Cloudflare quick tunnel for phone tests) | **ECS Express Mode**, ap-south-1 |
 | Web | Vite (:5173) | Vite with staging env | **Amplify Hosting**, ap-south-1 |
 | Database + Auth | Supabase CLI (Docker) | Existing project **`eurcqegzmjmscktzutbn`**, free tier, **ap-southeast-2 Sydney** | **New** Supabase **Pro** project, **ap-south-1 Mumbai** |
@@ -1611,13 +1562,13 @@ The deploy role trusts `token.actions.githubusercontent.com`, limited to `repo:G
 6. **(2:15)** Developer view: `curl` the API, MCP Inspector → `list_red_flags`; the same JSON shape for a Karnataka parcel.
 7. **(2:40)** Close: "Diligence done once, verifiable by anyone, and alive. That's a distribution channel, a monitoring revenue line and an evidence format title insurers can use."
 
-### 16.3 Anticipated Interview Questions
+### 16.3 Frequently Asked Questions
 - *Why credentials and not just a PDF with a QR?* Open standard (W3C VC 2.0), offline-checkable signature, live status without a database lookup, interoperable with wallets and DigiLocker-style flows later.
 - *Privacy?* No names in the passport; owner commitment hash; dossier only under a consented grant with receipts.
 - *What if a passport says LIVE and the land is still fraudulent?* Coverage is explicit; it attests to records seen; monitoring cadence and sources are stated; it's not insurance.
 - *How does this scale?* One 16 KB list per 131k passports, CDN-cacheable; Fargate autoscaling; Postgres outbox → SQS when volume grows.
 - *How would a bank integrate?* Verify API + webhook subscription; the `integrate-lender.md` guide; one day of effort.
-- *Why ECS Express Mode?* Production defaults (HTTPS load balancer, autoscaling, logs) on the same cloud Landeed uses, without hand-building the load balancer and service.
+- *Why ECS Express Mode?* Production defaults (HTTPS load balancer, autoscaling, logs) without hand-building the load balancer and service.
 
 ### 16.4 Risk Register
 
@@ -1767,7 +1718,7 @@ One long-form film, `demo-media/video/titlivo-story-1080p.mp4` (1920×1080, 30 f
 | D. Render | `pnpm demo:story` → `npx remotion render src/index.ts TitlivoStory ../demo-media/video/titlivo-story-1080p.mp4 --concurrency=4` | ≈ 1.5–3 hours of CPU render for 11–14 min of video. Leave the laptop plugged in on *Best performance*; Remotion resumes nothing, so don't sleep the laptop mid-render |
 | E. Chapters + check | `pnpm demo:story-chapters` (from act start frames) → `video/chapters.txt`; `pnpm demo:verify` | Seconds; must report 65/65 |
 
-**Remotion licence:** Remotion is source-available, not open source. It is free for individuals, non-profits and for-profit organisations with **up to 3 employees**; larger companies need a paid Company License. A solo portfolio project qualifies for the free licence. If Titlivo is later adopted by an employer (for example, used inside Landeed's sales team), that organisation needs its own licence before rendering with it. Record the licence check date in `video/LICENSES.md`.
+**Remotion licence:** Remotion is source-available, not open source. It is free for individuals, non-profits and for-profit organisations with **up to 3 employees**; larger companies need a paid Company License. A solo open-source project qualifies for the free licence. If an organisation larger than that adopts Titlivo, it needs its own licence before rendering with it. Record the licence check date in `video/LICENSES.md`.
 
 **Remotion build rules:**
 - One composition `TitlivoStory`; one component per act, built from scene components.
@@ -1865,7 +1816,7 @@ Every row must have its screenshot(s), its recording chapter (= flow number) and
 | C62 | Interface states: empty, no match + suggestions, out of coverage, rate limited | 7.5 | 17 | 17 | VI |
 | C63 | PWA: install, standalone launch, phone dossier, phone verifier, phone lender inbox | 7.6a | 18 | 18 | VII |
 | C64 | Live deployment: Amplify home, API `/healthz`, `/docs`, `did.json` on the live host (can only pass after M15b; until then `demo:verify` reports it as the single open item) | 15.2 | 19 | 19 | VIII |
-| C65 | Synthetic ribbon and disclaimers visible on dossier, answer, PDF and passport | R4, 2.5 | all | all | VIII (disclosure) |
+| C65 | Synthetic ribbon and disclaimers visible on dossier, answer, PDF and passport | R4, 2.3 | all | all | VIII (disclosure) |
 
 ## Annexure A: API Reference (summary)
 
@@ -1917,9 +1868,9 @@ Every row must have its screenshot(s), its recording chapter (= flow number) and
 Real data partnerships and data-processing agreements; OAuth 2.1 for MCP; per-tenant quotas and billing; tile CDN (CloudFront); read replicas; a live adapter per state behind a fetch service with consent and terms review; legal review of REG-02/03; human legal-desk workflow on top of title drafts; a larger multilingual eval set with native-speaker review. v2 additions: passport signing keys in **AWS KMS** (or an HSM); SD-JWT VC for selective disclosure of owner names to consented parties; DigiLocker issuer integration; SQS/EventBridge instead of the Postgres outbox at high volume; CloudFront in front of `/status/*`; WAF on the load balancer; multi-AZ minimum two tasks; a formal threat model for credential forgery and replay; partnership pilots with one lender and one title insurer.
 
 ## Annexure C: Sources
-- Landeed Terra launch: https://www.ycombinator.com/launches/Q4L-terra-turning-indian-property-from-a-who-you-know-market-into-a-what-you-know-market
-- Landeed API & MCP / Land Intelligence: https://www.landeed.com/monitoring-compliance
-- Landeed Terra coverage (Construction Week, Jun 2026): https://www.constructionweekonline.in/news/landeed-launches-property-intelligence-platform-terra
+
+A fuller, annotated reading list on the problem (court data, titling policy, DILRMP and Land Stack, recent fraud cases) is in [references.md](references.md).
+
 - Land Stack + GoRT: https://www.devdiscourse.com/article/law-order/3746323-centre-launches-land-stack-glossary-to-modernise-indias-land-governance
 - DILRMP status: https://www.angelone.in/news/government-schemes/land-records-go-digital-19-states-enable-download-of-digitally-signed-legally-valid-records-under-dilrmp
 - Gemini pricing (third-party tracker, checked 25 Oct 2026; verify on ai.google.dev): https://www.morphllm.com/gemini-api-pricing
@@ -1952,29 +1903,25 @@ Real data partnerships and data-processing agreements; OAuth 2.1 for MCP; per-te
 - ComfyUI on 6–8 GB GPUs (Easton Dev, Jul 2026): https://eastondev.com/blog/en/posts/ai/20260721-comfyui-low-vram-acceleration/
 - Playwright screencast API (TestDino): https://testdino.com/blog/playwright-screencast
 
-## Annexure D: Tooling Decisions Checked Against the JD and Landeed's Stack
-
-**Inputs considered:**
-- **JD:** Python, SQL, REST APIs with Postman/curl, reading API docs, technical documentation, demos and prototypes. Nice to have: Jupyter, GitHub, BI/data-visualisation tools, small internal tools.
-- **Landeed's published stack:** Rust + gRPC + PostgreSQL on AWS; React Native frontend; "minimal red tape from local to prod". Its engineering post names no Kubernetes, Terraform, Kafka or message broker; it mentions async workers and notification systems.
+## Annexure D: Tooling Decisions
 
 | Tool | Verdict | Where | Reason |
 |---|---|---|---|
-| **Postman** | **Required** | Public workspace, collection + environments (local, prod) + example tests | Named in the JD; the artefact a pre-sales engineer hands to a client |
-| **curl** | **Required** | Every quickstart and README; the "Show API call" panel | Named in the JD |
-| **Jupyter** | **Required (JD nice-to-have)** | `notebooks/01_bank_officer_story.ipynb`, `02_sql_insights.ipynb`, `03_verify_a_passport.ipynb` | Data storytelling with live API calls and SQL |
-| **GitHub + Actions** | **Required** | Repo, CI, OIDC deploy | JD nice-to-have; replaces Jenkins |
+| **Postman** | **Required** | Public workspace, collection + environments (local, prod) + example tests | The standard way to hand an API to integrators, with runnable tests |
+| **curl** | **Required** | Every quickstart and README; the "Show API call" panel | Universal, copy-pasteable API examples |
+| **Jupyter** | **Required** | `notebooks/01_bank_officer_story.ipynb`, `02_sql_insights.ipynb`, `03_verify_a_passport.ipynb` | Data storytelling with live API calls and SQL |
+| **GitHub + Actions** | **Required** | Repo, CI, OIDC deploy | Replaces Jenkins |
 | **Playwright** | **Use** | E2E tests (incl. the two-page live-revocation test) | Testing only, never for scraping government portals |
-| PostgreSQL full-text + pgvector + pg_trgm | **Use** (instead of Elasticsearch) | Search and RAG | Same database Landeed runs; one store to operate |
-| Terraform | **Skip** | — | One ECS Express service + Amplify app is set up once with the CLI/console and kept in scripts; IaC adds no JD value at this size |
-| Rust + gRPC | **Skip** | — | A Solutions Engineer role is judged on Python, SQL, APIs and docs; a Python service is the right fit |
+| PostgreSQL full-text + pgvector + pg_trgm | **Use** (instead of Elasticsearch) | Search and RAG | One store to operate |
+| Terraform | **Skip** | — | One ECS Express service + Amplify app is set up once with the CLI/console and kept in scripts; IaC adds little at this size |
+| Rust + gRPC | **Skip** | — | A Python service keeps the stack small and the SQL readable |
 | Payment gateway (Razorpay, Stripe…) | **Skip** | — | No money moves in the prototype; see 4.1 |
-| Kubernetes | **Skip** | — | ECS Express gives autoscaling and HTTPS; Kubernetes adds cost and weeks of work for no JD benefit |
+| Kubernetes | **Skip** | — | ECS Express gives autoscaling and HTTPS; Kubernetes adds cost and weeks of work for no benefit at this size |
 | Jenkins | **Skip** | — | GitHub Actions covers CI/CD |
 | Datadog | **Skip** | — | One observability stack is enough: CloudWatch + Grafana Cloud (free) |
 | Firecrawl | **Skip** | — | No scraping: the knowledge base uses official PDFs; crawling government portals raises terms-of-use issues |
 | Kafka | **Skip** | — | The Postgres outbox handles this volume; the scale path on AWS is SQS/EventBridge |
 | Selenium | **Skip** | — | Playwright already covers browser testing |
-| Prisma ORM | **Skip** | — | It's a TypeScript ORM; the backend is Python, and hand-written SQL shows the JD's SQL skill |
+| Prisma ORM | **Skip** | — | It's a TypeScript ORM; the backend is Python, and hand-written SQL keeps every query explicit and reviewable |
 | Elasticsearch | **Skip** | — | Covered by Postgres (above) |
 | Neon | **Skip** | — | Supabase already provides Postgres + PostGIS + Auth + Storage; a second Postgres provider splits the stack |
