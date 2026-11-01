@@ -1,0 +1,40 @@
+# Karnataka RTC (Pahani) → canonical. Keys are the record's own Kannada field names.
+record_type: ka_rtc
+state_code: "29"
+system_name: "Bhoomi RTC (synthetic)"
+area_unit: acre_gunta
+date_format: "%d-%m-%Y"
+digits: ascii
+parcel:
+  village_code: "ಗ್ರಾಮ_ಕೋಡ್"
+  survey_no: "ಸರ್ವೆ ನಂಬರ್"
+  area: "ವಿಸ್ತೀರ್ಣ (ಎ-ಗುಂ)"
+  tenure: "ಹಿಡುವಳಿ ಸ್ವರೂಪ"
+  land_class: "ಭೂ ಸ್ವರೂಪ"
+  holders: "ಮಾಲೀಕರ ಹೆಸರು"
+  remarks: "ಷರಾ"
+events:
+  list: "ಮ್ಯುಟೇಶನ್"
+  entry_no: "ಎಂ.ಆರ್ ಸಂಖ್ಯೆ"
+  date: "ದಿನಾಂಕ"
+  type: "ವಿಧ"
+  from: "ಕೊಟ್ಟವರು"
+  to: "ಪಡೆದವರು"
+  doc_no: "ದಸ್ತಾವೇಜು ಸಂಖ್ಯೆ"
+  amount: "ಮೊತ್ತ"
+  status: "ಸ್ಥಿತಿ"
+  basis: "ಆಧಾರ"
+encumbrances:
+  list: "ಋಣಭಾರ"
+  kind: "ವಿಧ"
+  lender: "ಬ್ಯಾಂಕ್"
+  amount: "ಮೊತ್ತ"
+  date: "ದಿನಾಂಕ"
+  released: "ಬಿಡುಗಡೆ ದಿನಾಂಕ"
+  mutation_no: "ಎಂ.ಆರ್ ಸಂಖ್ಯೆ"
+litigation:
+  list: "ನ್ಯಾಯಾಲಯ ಪ್ರಕರಣ"
+  case_no: "ಪ್ರಕರಣ ಸಂಖ್ಯೆ"
+  court: "ನ್ಯಾಯಾಲಯ"
+  status: "ಸ್ಥಿತಿ"
+  date: "ದಿನಾಂಕ"

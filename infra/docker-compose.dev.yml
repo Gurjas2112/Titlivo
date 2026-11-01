@@ -1,0 +1,20 @@
+# Local development services. Production uses Supabase (see docs/03 spec §15).
+name: titlivo
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: titlivo
+    ports: ["54329:5432"]
+    volumes: [db_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      retries: 20
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["1025:1025", "8025:8025"]
+    profiles: ["mail"]
+volumes:
+  db_data:

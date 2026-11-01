@@ -1,0 +1,56 @@
+# Native term → canonical code, per state (aligned with DoLR's Glossary of Revenue Terms in spirit).
+# `en` is the plain-English gloss shown on glossary chips in the UI.
+
+event_type:
+  "27":   # Maharashtra (Marathi)
+    "खरेदी":        {code: sale,       en: "Sale (purchase deed)"}
+    "वारस":         {code: succession, en: "Succession (heirship entry)"}
+    "बक्षीसपत्र":    {code: gift,       en: "Gift deed"}
+    "वाटप":         {code: partition,  en: "Partition"}
+    "कुलमुखत्यारपत्र": {code: gpa,       en: "General power of attorney"}
+    "मूळ नोंद":      {code: grant,      en: "Original entry"}
+  "29":   # Karnataka (Kannada)
+    "ಕ್ರಯ":          {code: sale,       en: "Sale (kraya)"}
+    "ಪೌತಿ ಖಾತೆ":     {code: succession, en: "Succession (pouthi khata)"}
+    "ದಾನ":          {code: gift,       en: "Gift (dana)"}
+    "ವಿಭಾಗ":        {code: partition,  en: "Partition (vibhaga)"}
+    "ಜಿಪಿಎ":        {code: gpa,        en: "General power of attorney"}
+    "ಮೂಲ ನಮೂದು":    {code: grant,      en: "Original entry"}
+  "24":   # Gujarat (Gujarati)
+    "વેચાણ":        {code: sale,       en: "Sale (vechan)"}
+    "વારસાઈ":       {code: succession, en: "Succession (varsai)"}
+    "બક્ષિસ":        {code: gift,       en: "Gift (bakshis)"}
+    "વહેંચણી":      {code: partition,  en: "Partition"}
+    "કુલમુખત્યાર":   {code: gpa,        en: "General power of attorney"}
+    "મૂળ નોંધ":      {code: grant,      en: "Original entry"}
+
+tenure_class:
+  "27":
+    "भोगवटादार वर्ग-1": {code: occupancy_class_1, en: "Occupancy Class I (freely transferable)", restricted: false}
+    "भोगवटादार वर्ग-2": {code: occupancy_class_2, en: "Occupancy Class II (transfer needs Collector sanction)", restricted: true}
+  "29":
+    "ಸ್ವಂತ":            {code: freehold,       en: "Own holding (freehold)", restricted: false}
+    "ದರಖಾಸ್ತು (PTCL)":   {code: granted_ptcl,   en: "Granted land under the PTCL Act (transfer restricted)", restricted: true}
+  "24":
+    "જૂની શરત":          {code: old_tenure,     en: "Old tenure (freely transferable)", restricted: false}
+    "નવી શરત":           {code: new_tenure,     en: "New tenure (transfer needs permission and premium)", restricted: true}
+
+land_class:
+  "27": {"जिरायत": {code: dry, en: "Dry (rain-fed)"}, "बागायत": {code: irrigated, en: "Irrigated"}}
+  "29": {"ಖುಷ್ಕಿ": {code: dry, en: "Dry (khushki)"}, "ತರಿ": {code: wet, en: "Wet (tari)"}}
+  "24": {"બિનપિયત": {code: dry, en: "Unirrigated"}, "પિયત": {code: irrigated, en: "Irrigated"}}
+
+encumbrance_kind:
+  "27": {"बोजा": {code: mortgage, en: "Charge / mortgage (boja)"}}
+  "29": {"ಅಡಮಾನ": {code: mortgage, en: "Mortgage (adamana)"}}
+  "24": {"ગીરો": {code: mortgage, en: "Mortgage (giro)"}}
+
+mutation_status:
+  "27": {"प्रमाणित": certified, "प्रलंबित": pending}
+  "29": {"ದೃಢೀಕೃತ": certified, "ಬಾಕಿ": pending}
+  "24": {"પ્રમાણિત": certified, "બાકી": pending}
+
+litigation_status:
+  "27": {"प्रलंबित": pending, "स्थगिती": stay, "निकाली": disposed}
+  "29": {"ಬಾಕಿ": pending, "ತಡೆಯಾಜ್ಞೆ": stay, "ವಿಲೇವಾರಿ": disposed}
+  "24": {"પડતર": pending, "મનાઈ હુકમ": stay, "નિકાલ": disposed}

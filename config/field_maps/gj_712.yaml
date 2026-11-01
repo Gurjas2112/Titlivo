@@ -1,0 +1,40 @@
+# Gujarat 7/12 + 8-A → canonical. Keys are the record's own Gujarati field names.
+record_type: gj_712
+state_code: "24"
+system_name: "AnyROR 7/12 + 8-A (synthetic)"
+area_unit: hectare_are_sqm
+date_format: "%d/%m/%Y"
+digits: gujarati
+parcel:
+  village_code: "ગામ_કોડ"
+  survey_no: "સર્વે નંબર"
+  area: "ક્ષેત્રફળ (હે-આરે-ચોમી)"
+  tenure: "સત્તા પ્રકાર"
+  land_class: "જમીન પ્રકાર"
+  holders: "ખાતેદાર"
+  remarks: "રિમાર્ક"
+events:
+  list: "હક્કપત્રક નોંધો"
+  entry_no: "નોંધ નંબર"
+  date: "તારીખ"
+  type: "પ્રકાર"
+  from: "આપનાર"
+  to: "લેનાર"
+  doc_no: "દસ્તાવેજ નંબર"
+  amount: "રકમ"
+  status: "સ્થિતિ"
+  basis: "આધાર"
+encumbrances:
+  list: "બોજા"
+  kind: "પ્રકાર"
+  lender: "બેંક"
+  amount: "રકમ"
+  date: "તારીખ"
+  released: "મુક્તિ તારીખ"
+  mutation_no: "નોંધ નંબર"
+litigation:
+  list: "કોર્ટ કેસ"
+  case_no: "કેસ નંબર"
+  court: "કોર્ટ"
+  status: "સ્થિતિ"
+  date: "તારીખ"

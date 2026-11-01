@@ -1,0 +1,76 @@
+# Red-flag catalogue (spec §6.2, §6.11). Each rule is a SQL file in api/src/titlivo/db/queries/flags/.
+# `material: true` means a new occurrence suspends any live Title Passport for the parcel.
+# Templates use {placeholders} filled only from the rule's evidence JSON (facts come from SQL).
+
+F01:
+  title: Break in chain of title
+  severity: high
+  material: true
+  basis: "Transferor was not a recorded holder at the time of transfer"
+  template:
+    en: "Entry {mutation_no} ({registered_on}) records a {event_type} by {transferors_not_holders} of {transferors} transferor(s) who were not recorded holders at that time."
+    hi: "प्रविष्टि {mutation_no} ({registered_on}) में ऐसे {transferors_not_holders} हस्तांतरणकर्ता दर्ज हैं जो उस समय रिकॉर्ड में धारक नहीं थे।"
+F02:
+  title: Mortgage without a recorded release
+  severity: high
+  material: true
+  basis: "Encumbrance status is active"
+  template:
+    en: "A {kind} of ₹{amount_inr} in favour of {lender}, recorded on {created_on} (entry {mutation_no}), has no recorded release."
+    hi: "{lender} के पक्ष में ₹{amount_inr} का बंधक ({created_on}, प्रविष्टि {mutation_no}) अभी मुक्त दर्ज नहीं है।"
+F03:
+  title: Pending litigation
+  severity: high
+  material: true
+  basis: "Court case with status pending or stay"
+  template:
+    en: "Case {case_no} in {court}, filed on {filed_on}, is recorded as {status}."
+    hi: "{court} में प्रकरण {case_no} ({filed_on}) {status} दर्ज है।"
+F04:
+  title: Recorded area differs from the map
+  severity: medium
+  material: false
+  basis: "Recorded area and mapped geodesic area differ by more than 10 %"
+  template:
+    en: "The record states {recorded_m2} m² ({native_area} in {native_unit}), but the mapped parcel measures {mapped_m2} m², a difference of {difference_pct} %."
+    hi: "रिकॉर्ड में क्षेत्र {recorded_m2} m² है, जबकि नक्शे पर {mapped_m2} m² ({difference_pct} % अंतर)।"
+F05:
+  title: Restricted tenure
+  severity: high
+  material: true
+  basis: "Transfer needs prior sanction from the Collector or competent authority"
+  template:
+    en: "The tenure class is {tenure_class}: a transfer needs prior permission from the competent authority."
+    hi: "भूधारणा वर्ग {tenure_class} है: हस्तांतरण के लिए सक्षम प्राधिकारी की पूर्व अनुमति आवश्यक है।"
+F06:
+  title: Rapid resale (flipping)
+  severity: medium
+  material: false
+  basis: "Three or more sales within 24 months"
+  template:
+    en: "{sales_in_window} sales were registered between {window_start} and {window_end} (entries {mutation_nos})."
+    hi: "{window_start} से {window_end} के बीच {sales_in_window} बिक्री दर्ज हुईं।"
+F11:
+  title: "Fraud Sentinel: double sale"
+  severity: high
+  material: true
+  basis: "The same transferor conveyed the parcel twice without reacquiring it"
+  template:
+    en: "The same {common_transferors} transferor(s) sold this parcel in entry {first_sale.mutation_no} ({first_sale.registered_on}) and again in entry {second_sale.mutation_no} ({second_sale.registered_on}) without reacquiring it."
+    hi: "उन्हीं विक्रेताओं ने यह भूमि प्रविष्टि {first_sale.mutation_no} और फिर {second_sale.mutation_no} में दोबारा बेची।"
+F12:
+  title: "Fraud Sentinel: heir-impersonation transfer"
+  severity: high
+  material: true
+  basis: "Sale by newly added heirs within 180 days of a succession entry with no death or succession record"
+  template:
+    en: "Entry {succession.mutation_no} ({succession.registered_on}) added {succession.heirs_added} heir(s) with no death or succession record, and they sold the parcel {days_between} days later (entry {sale.mutation_no})."
+    hi: "प्रविष्टि {succession.mutation_no} में बिना मृत्यु/उत्तराधिकार प्रमाण के {succession.heirs_added} वारिस जोड़े गए और {days_between} दिन बाद उन्होंने भूमि बेच दी।"
+F16:
+  title: "Fraud Sentinel: sale while mortgaged"
+  severity: high
+  material: true
+  basis: "Sale registered while an encumbrance was active"
+  template:
+    en: "The sale in entry {sale.mutation_no} ({sale.registered_on}) was registered while a mortgage of ₹{mortgage.amount_inr} to {mortgage.lender} (from {mortgage.created_on}) was still active."
+    hi: "प्रविष्टि {sale.mutation_no} की बिक्री उस समय दर्ज हुई जब {mortgage.lender} का ₹{mortgage.amount_inr} का बंधक सक्रिय था।"

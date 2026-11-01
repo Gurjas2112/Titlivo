@@ -1,0 +1,40 @@
+# Maharashtra 7/12 (Satbara) → canonical. Keys are the record's own Marathi field names.
+record_type: mh_712
+state_code: "27"
+system_name: "Mahabhumi 7/12 (synthetic)"
+area_unit: hectare_are
+date_format: "%d/%m/%Y"
+digits: devanagari
+parcel:
+  village_code: "गाव_कोड"
+  survey_no: "भूमापन क्रमांक"
+  area: "क्षेत्र (हे.आर)"
+  tenure: "भोगवटादार वर्ग"
+  land_class: "जमिनीचा प्रकार"
+  holders: "कब्जेदार"
+  remarks: "शेरा"
+events:
+  list: "फेरफार नोंदी"
+  entry_no: "फेरफार क्र"
+  date: "दिनांक"
+  type: "प्रकार"
+  from: "देणार"
+  to: "घेणार"
+  doc_no: "दस्त क्र"
+  amount: "मोबदला"
+  status: "स्थिती"
+  basis: "आधार"
+encumbrances:
+  list: "इतर हक्क"
+  kind: "प्रकार"
+  lender: "धनको"
+  amount: "रक्कम"
+  date: "दिनांक"
+  released: "मुक्त दिनांक"
+  mutation_no: "फेरफार क्र"
+litigation:
+  list: "न्यायालयीन प्रकरणे"
+  case_no: "प्रकरण क्र"
+  court: "न्यायालय"
+  status: "स्थिती"
+  date: "दिनांक"
