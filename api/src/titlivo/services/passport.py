@@ -18,7 +18,7 @@ import qrcode.image.svg
 from joserfc import jws
 
 from titlivo.constants import COVERAGE, PASSPORT_DISCLAIMER, STATES
-from titlivo.db.pool import fetch_all, fetch_one, tx
+from titlivo.db.pool import fetch_all, fetch_one, pool, tx
 from titlivo.services import did, status_list, translit
 from titlivo.services import flags as flag_service
 from titlivo.services.parcels import NotFound
@@ -147,7 +147,7 @@ def get(passport_id: str) -> dict[str, Any]:
 
 
 def for_parcel(parcel_id: str) -> list[dict[str, Any]]:
-    with tx() as conn:
+    with pool().connection() as conn:  # plain read, no transaction round trips
         rows = conn.execute(
             "select id, issued_at, valid_until from titlivo.passports where parcel_id = %s and superseded_by is null order by issued_at desc",
             (parcel_id,),

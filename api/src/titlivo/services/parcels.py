@@ -1,6 +1,7 @@
 """Parcel service: the one place REST, MCP and the Ask agent get parcel facts from (rule 8)."""
 
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from titlivo.auth import Caller
@@ -41,8 +42,9 @@ def search(q: str, caller: Caller, limit: int = 20) -> list[dict[str, Any]]:
     ]
 
 
-def get_flags(parcel_id: str, lang: str = "en") -> list[dict[str, Any]]:
-    _require(parcel_id)
+def get_flags(parcel_id: str, lang: str = "en", check: bool = True) -> list[dict[str, Any]]:
+    if check:
+        _require(parcel_id)
     return [flag_service.present({**f, "flag_id": f["flag_id"]}, lang) for f in fetch_all("parcel_flags", {"parcel_id": parcel_id})]
 
 
@@ -53,8 +55,9 @@ def _require(parcel_id: str) -> dict[str, Any]:
     return p
 
 
-def title_chain(parcel_id: str, caller: Caller, since_year: int = 1900) -> list[dict[str, Any]]:
-    _require(parcel_id)
+def title_chain(parcel_id: str, caller: Caller, since_year: int = 1900, check: bool = True) -> list[dict[str, Any]]:
+    if check:
+        _require(parcel_id)
     chain = fetch_all("title_chain", {"parcel_id": parcel_id})
     ids = sorted({x for e in chain for x in (e["from_parties"] + e["to_parties"])})
     names = {r["id"]: _name(r, caller) for r in fetch_all("parties", {"ids": ids})}
@@ -89,8 +92,15 @@ def title_chain(parcel_id: str, caller: Caller, since_year: int = 1900) -> list[
 def dossier(parcel_id: str, caller: Caller, lang: str = "en") -> dict[str, Any]:
     p = _require(parcel_id)
     state = STATES[p["state_code"]]
-    holders = fetch_all("holders", {"parcel_id": parcel_id})
-    flags = get_flags(parcel_id, lang)
+    # Independent reads run in parallel: the database may be a long round trip away.
+    args = {"parcel_id": parcel_id}
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        f_holders = ex.submit(fetch_all, "holders", args)
+        f_flags = ex.submit(get_flags, parcel_id, lang, False)
+        f_chain = ex.submit(title_chain, parcel_id, caller, 1900, False)
+        f_enc = ex.submit(fetch_all, "encumbrances", args)
+        f_lit = ex.submit(fetch_all, "litigation", args)
+    holders, flags = f_holders.result(), f_flags.result()
     tenure_term = next((e for e in glossary.entries() if e["domain"] == "tenure_class" and e["canonical"] == p["tenure_class"]), None)
     coverage = {**COVERAGE, "parcel_sources": [p["system_name"]]}
     native = p["native"]
@@ -123,9 +133,9 @@ def dossier(parcel_id: str, caller: Caller, lang: str = "en") -> dict[str, Any]:
         },
         "native": {"record_type": p["record_type"], "system": p["system_name"], "as_of": p["as_of"].isoformat(), "record": native},
         "geometry": p["geometry"],
-        "title_chain": title_chain(parcel_id, caller),
-        "encumbrances": [_enc(e) for e in fetch_all("encumbrances", {"parcel_id": parcel_id})],
-        "litigation": [{**r, "filed_on": r["filed_on"].isoformat()} for r in fetch_all("litigation", {"parcel_id": parcel_id})],
+        "title_chain": f_chain.result(),
+        "encumbrances": [_enc(e) for e in f_enc.result()],
+        "litigation": [{**r, "filed_on": r["filed_on"].isoformat()} for r in f_lit.result()],
         "flags": flags,
         "summary": _summary(flags, coverage),
         "coverage": coverage,

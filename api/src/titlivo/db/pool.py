@@ -28,7 +28,7 @@ def pool() -> ConnectionPool:
             get_settings().database_url,
             min_size=1,
             max_size=10,
-            kwargs={"row_factory": dict_row, "prepare_threshold": None, "autocommit": False},
+            kwargs={"row_factory": dict_row, "prepare_threshold": None, "autocommit": True},
             open=True,
         )
     return _pool
