@@ -249,7 +249,7 @@ The demo media is generated from the running app by Playwright, never hand-edite
 | M5 | Vector tiles (p95 < 150 ms) | GeoJSON layer today · MVT next |
 | M6 | Web: search, map, dossier, timeline, flags, Show API call | ✅ Done · glossary page next |
 | M7 | Land-law knowledge base + hybrid search (≥ 90 % section hit) | Planned |
-| M8 | Cited agent + grounding validator | ✅ Grounding check + template fallback · Gemini key, SSE streaming, evals next |
+| M8 | Cited agent + grounding validator | ✅ Gemini 3.8 Flash live: answers in en/hi/mr/kn/gu, number-by-number grounding check, banned-wording check with one retry, template fallback · streaming, answer cache and evals next |
 | M9 | MCP server (4 tools, key auth) | ✅ Done |
 | M10 | Title draft PDF + bulk lookup | Planned |
 | M11 | Red team, admin console, telemetry | Admin demo panel done · rest planned |
