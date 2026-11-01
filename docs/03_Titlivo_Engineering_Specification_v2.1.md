@@ -2,8 +2,6 @@
 
 **System Engineering Specification — Production-Ready Prototype Baseline (v2.1)**
 
-Smart India Hackathon 2026 · Problem Statements **26014**: *An Integrated GIS-based Digital Public Infrastructure for Land Governance* ("Land Stack") and **26019**: *National Digital Platform for Research, Policy Innovation and Evidence-Based Land Governance* (both Ministry of Rural Development, Department of Land Resources)
-
 **Selected flagship** of the three-project portfolio, built to support an application for **Associate Solutions Engineer, Landeed (YC S22), Hyderabad**
 
 ![Titlivo](brand/titlivo-lockup-light.png)
@@ -15,7 +13,7 @@ Smart India Hackathon 2026 · Problem Statements **26014**: *An Integrated GIS-b
 | Field | Entry |
 |---|---|
 | Document title | Titlivo — System Engineering Specification (Prototype Baseline) |
-| Document number | LP-TLV-SIH26-26014-26019-SES-001 |
+| Document number | LP-TLV-SES-001 |
 | Version | 2.1 |
 | Date of issue | 1 November 2026 |
 | Status | Baseline for the production-ready prototype and live deployment, mapped to the provisioned accounts (local → staging → production) |
@@ -83,7 +81,7 @@ The design commitments are:
 | Harmonisation | Python state adapters + YAML field maps + **GoRT-aligned term glossary** + unit converters + `indic-transliteration` | 6.1 |
 | Deterministic reasoning | SQL recursive CTE for the title chain; rule catalogue F01–F10 for red flags | 6.2 |
 | Agent | **Pydantic AI** with **Gemini 3.8 Flash** (`google:gemini-3.8-flash`), structured output, grounding validator | 6.3 |
-| Knowledge base (26019) | **Docling** (GPU) → **Gemini Embedding 2** (768-d) → pgvector HNSW + Postgres full-text → reciprocal-rank fusion | 6.4 |
+| Knowledge base | **Docling** (GPU) → **Gemini Embedding 2** (768-d) → pgvector HNSW + Postgres full-text → reciprocal-rank fusion | 6.4 |
 | MCP | **FastMCP 3** mounted at `/mcp` inside FastAPI (streamable HTTP), API-key bearer auth | 6.5 |
 | Map | **MapLibre GL JS + OpenFreeMap** basemap + PostGIS `ST_AsMVT` vector tiles | 6.6 |
 | API | **FastAPI**, OpenAPI 3.1, Scalar docs, Server-Sent Events for streaming answers | 6.7 |
@@ -135,7 +133,6 @@ MUST/SHOULD as RFC 2119. IDs: `FR-`, `NFR-`, `SEC-`, `REG-`, red-flag rules `F01
 
 | ID | Reference | URL |
 |---|---|---|
-| RD-1 | SIH PS 26014 (Land Stack) and 26019 (Research & policy platform) | SIH portal; PDFs supplied |
 | RD-2 | Landeed job post | https://www.workatastartup.com/jobs/91926 |
 | RD-3 | Landeed Terra launch (YC Launches) | https://www.ycombinator.com/launches/Q4L-terra-turning-indian-property-from-a-who-you-know-market-into-a-what-you-know-market |
 | RD-4 | Landeed API & MCP / Land Intelligence | https://www.landeed.com/monitoring-compliance |
@@ -157,23 +154,23 @@ MUST/SHOULD as RFC 2119. IDs: `FR-`, `NFR-`, `SEC-`, `REG-`, red-flag rules `F01
 
 ## 2. Problem Definition and Context
 
-### 2.1 Problem Statements (condensed)
-- **26014:** land data sits in disconnected systems (RoR, cadastral maps, registration, land use, tax). Formats, units, field counts, language and terminology differ by state. Build an interoperable GIS platform with APIs, standard schemas and citizen and department interfaces, scalable to all states.
-- **26019:** build a national knowledge platform for land governance, with a repository of policy and legal documents, **AI-powered search and recommendation**, GIS visualisation, analytics, role-based access and integration APIs.
+### 2.1 Problem Context (condensed)
+- **Land records:** land data sits in disconnected systems (RoR, cadastral maps, registration, land use, tax). Formats, units, field counts, language and terminology differ by state. Build an interoperable GIS platform with APIs, standard schemas and citizen and department interfaces, scalable to all states.
+- **Policy and research:** build a national knowledge platform for land governance, with a repository of policy and legal documents, **AI-powered search and recommendation**, GIS visualisation, analytics, role-based access and integration APIs.
 
 ### 2.2 Traceability
 
-| PS item | Titlivo feature | Section |
+| Need | Titlivo feature | Section |
 |---|---|---|
-| 26014: Integrate RoR, cadastral maps, registration records | Canonical parcel + holdings + title events + encumbrances, linked to geometry | 6.1, 8 |
-| 26014: State diversity in formats, units, language, terminology | Adapters, unit converters, transliteration, GoRT glossary, native record preserved | 6.1 |
-| 26014: Interoperable APIs, standards | REST + OpenAPI 3.1 + MVT tiles + MCP | 6.5–6.7 |
-| 26014: Citizen-centric service, transparency, risk of buying encroached/unauthorised property | Property dossier with red flags F01–F10 | 6.2, 7 |
-| 26014: Rural and urban, scalable | State adapter interface; coverage table | 6.1 |
-| 26019: Centralised repository of legal documents | Knowledge base of acts, state codes and GoRT | 6.4 |
-| 26019: AI-powered search | Hybrid search + cited answers | 6.3, 6.4 |
-| 26019: GIS visualisation, dashboards | Map, coverage dashboard, admin console | 6.6, 10 |
-| 26019: Role-based access, APIs | Supabase Auth roles, API keys, MCP | 9 |
+| Land records: Integrate RoR, cadastral maps, registration records | Canonical parcel + holdings + title events + encumbrances, linked to geometry | 6.1, 8 |
+| Land records: State diversity in formats, units, language, terminology | Adapters, unit converters, transliteration, GoRT glossary, native record preserved | 6.1 |
+| Land records: Interoperable APIs, standards | REST + OpenAPI 3.1 + MVT tiles + MCP | 6.5–6.7 |
+| Land records: Citizen-centric service, transparency, risk of buying encroached/unauthorised property | Property dossier with red flags F01–F10 | 6.2, 7 |
+| Land records: Rural and urban, scalable | State adapter interface; coverage table | 6.1 |
+| Policy and research: Centralised repository of legal documents | Knowledge base of acts, state codes and GoRT | 6.4 |
+| Policy and research: AI-powered search | Hybrid search + cited answers | 6.3, 6.4 |
+| Policy and research: GIS visualisation, dashboards | Map, coverage dashboard, admin console | 6.6, 10 |
+| Policy and research: Role-based access, APIs | Supabase Auth roles, API keys, MCP | 9 |
 
 ### 2.3 Relevance to Landeed and the JD
 
@@ -212,7 +209,7 @@ No real records, no legal opinion, no guarantee of title, no official ULPINs (de
 
 A senior-engineer review of the three portfolio projects against what Landeed needs now:
 
-| Criterion (weight) | Patrakshi (26018) | **Titlivo (26014+26019)** | BhuGhadi (26016+26017) |
+| Criterion (weight) | Patrakshi | **Titlivo** | BhuGhadi |
 |---|---|---|---|
 | Closeness to Landeed's current launches: Terra, API & MCP, chain of title, bank workflows (30 %) | Medium: ingestion is internal plumbing they already run | **High**: same buyers, same API shape, MCP | Low–medium: government LA cells are a smaller segment |
 | An unsolved problem worth a founder's attention (25 %) | Low: Indic OCR is crowded (Sarvam, Landeed's own) | **High: Title Passport + live status + fraud patterns** | Medium: statutory clocks are novel but niche |
@@ -255,7 +252,7 @@ The other two specs stay in the portfolio as supporting work; Titlivo is the one
 
 **Scenario C: Neha, engineer at a proptech startup (`integrator`).** She reads the quickstart, creates an API key and calls `GET /v1/parcels/search?state=29&survey_no=45/2`. The JSON has the same shape as a Maharashtra parcel, with Karnataka's *acre-gunta* preserved under `native`. She points **MCP Inspector** at `/mcp` and calls `get_title_chain`. Her team's own AI agent now answers property questions from Titlivo data.
 
-**Scenario D: Dr Rao, policy researcher (`anonymous`, 26019).** She asks, "How does mutation work in Gujarat compared with Maharashtra?" and gets a side-by-side answer with section-level citations to both land-revenue codes and the GoRT definitions.
+**Scenario D: Dr Rao, policy researcher (`anonymous`).** She asks, "How does mutation work in Gujarat compared with Maharashtra?" and gets a side-by-side answer with section-level citations to both land-revenue codes and the GoRT definitions.
 
 **Scenario E: the interviewer.** Opens the live link, clicks **"Tour: one parcel, three audiences"**, and is walked through A → B → C in 3 minutes.
 
@@ -267,13 +264,13 @@ The other two specs stay in the portfolio as supporting work; Titlivo is the one
 
 | Capability | Needed? | Reason | Verdict |
 |---|---|---|---|
-| Public access without login | **Yes** | Citizen-centric (26014); recruiters must try it instantly | Anonymous search, map, masked dossier, law Q&A |
+| Public access without login | **Yes** | Citizen-centric; recruiters must try it instantly | Anonymous search, map, masked dossier, law Q&A |
 | Login / sign-up | **Yes** | Owner names are personal data; title drafts and bulk use need accountability | Supabase Auth: email + password and Google sign-in |
 | MFA | **Yes, for `bank_officer` and `platform_admin`** | Both can see unmasked names, bulk results, keys and usage | TOTP enforced (`aal2`); citizens use password + e-mail verification |
 | API keys | **Yes** | Integrator and MCP scenarios are the core demo | Org-scoped, hashed, scoped, revocable |
 | Admin dashboard | **Yes** | LLM cost, grounding failures, key usage, coverage freshness | In-app console + Grafana |
 | Background work | **Yes, light** | Passport monitoring and webhook delivery must survive restarts | **Transactional outbox in Postgres** + an in-process async dispatcher (`FOR UPDATE SKIP LOCKED`, safe with several ECS tasks). No Redis/Celery |
-| Payment gateway | **No** | Neither PS 26014/26019 nor the JD needs money movement. The demo uses synthetic data, so nothing is sold. A gateway would add RBI payment-aggregator and PCI-DSS scope with no demo value | **Not built.** Passport issuance is free in the prototype |
+| Payment gateway | **No** | The JD does not need money movement. The demo uses synthetic data, so nothing is sold. A gateway would add RBI payment-aggregator and PCI-DSS scope with no demo value | **Not built.** Passport issuance is free in the prototype |
 
 ### 4.2 Functional Requirements
 
@@ -424,7 +421,7 @@ sequenceDiagram
 
 ## 6. Subsystem Design
 
-### 6.1 Harmonisation Layer (26014 core)
+### 6.1 Harmonisation Layer
 
 **Synthetic source generation** (`tools/synth/`):
 1. Pick 6 villages per state with polygons in the datameet dataset (Maharashtra, Karnataka and Gujarat are covered) and join them to LGD codes by name and district.
@@ -522,7 +519,7 @@ The dossier shows each flag with its evidence rows and source IDs. **The absence
 - **Streaming:** `/v1/ask` returns SSE events `token`, `citation`, `done` and `error`.
 - **Cost control:** answers are cached by `sha256(question_norm, parcel_id, parcel_version, language)` for 24 h in `titlivo.answer_cache`. Token counts are recorded per call.
 
-### 6.4 Land-Law Knowledge Base (26019)
+### 6.4 Land-Law Knowledge Base
 
 **Corpus (v1):**
 - Registration Act 1908
@@ -720,7 +717,7 @@ sequenceDiagram
 /                 search-first home: one search box (any script), map, "Tour: one parcel, three audiences"
 /p/:parcelId      Property Dossier (map left, dossier right, Ask drawer)
 /compare          two parcels side by side
-/law              Ask about land law (26019), with state filter
+/law              Ask about land law, with state filter
 /glossary         searchable GoRT-aligned glossary, native terms per state
 /bulk             bulk lookup (bank_officer)
 /developers       API keys, quickstart, MCP guide, usage
@@ -1401,7 +1398,7 @@ v2.1 additions:
 
 | | **local** | **staging** | **production** |
 |---|---|---|---|
-| Purpose | Daily development, tests, KB ingest on the GPU, demo-media capture | Shared demo DB, Auth/Google sign-in trials, smoke tests before prod | Public live link for recruiters, Landeed and SIH judges |
+| Purpose | Daily development, tests, KB ingest on the GPU, demo-media capture | Shared demo DB, Auth/Google sign-in trials, smoke tests before prod | Public live link for recruiters, Landeed and other reviewers |
 | API | `make dev` on the laptop (:8000) | Laptop API with `.env.staging` (optionally a Cloudflare quick tunnel for phone tests) | **ECS Express Mode**, ap-south-1 |
 | Web | Vite (:5173) | Vite with staging env | **Amplify Hosting**, ap-south-1 |
 | Database + Auth | Supabase CLI (Docker) | Existing project **`eurcqegzmjmscktzutbn`**, free tier, **ap-southeast-2 Sydney** | **New** Supabase **Pro** project, **ap-south-1 Mumbai** |

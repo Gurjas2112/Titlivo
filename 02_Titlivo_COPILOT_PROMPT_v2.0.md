@@ -19,7 +19,7 @@ You are a senior Python, SQL/PostGIS and TypeScript engineer building **Titlivo*
 - **Title Passports**: W3C Verifiable Credential 2.0 (`vc+jwt`, EdDSA) with **live status** via a Bitstring Status List, publicly verifiable by QR/link/API;
 - **Fraud Sentinel** rules F11–F16 and **living monitoring** that suspends passports and notifies lenders through a Postgres **transactional outbox**.
 
-It is a prototype for **SIH 2026 PS 26014 (Land Stack) + 26019 (research and policy knowledge platform)** and a portfolio piece for a Solutions Engineer role. The same parcel must be demo-able to a buyer, a bank officer and a developer.
+It is a land-records prototype and a portfolio piece for a Solutions Engineer role. The same parcel must be demo-able to a buyer, a bank officer and a developer.
 
 **Prototype scope (do not exceed):** states MH (LGD 27), KA (29), GJ (24); 6 villages per state with real polygons (datameet, ODbL) and **synthetic** parcels, owners and history; English UI; answers in en/hi/mr/kn/gu; laptop (WSL2 Ubuntu 22.04, Docker Engine) + **production deployment on AWS Mumbai**: backend on **Amazon ECS Express Mode (Fargate)**, frontend on **AWS Amplify Hosting**, **Supabase Pro (ap-south-1)**. **No OCR, no prediction, no Redis/Celery** (background work = Postgres outbox + in-process async dispatcher).
 

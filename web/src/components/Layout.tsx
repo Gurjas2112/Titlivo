@@ -24,7 +24,7 @@ export default function Layout() {
   return (
     <div className="flex min-h-full flex-col">
       <div className="bg-saffron px-4 py-1 text-center text-xs font-semibold text-white" data-testid="synthetic-ribbon">
-        Synthetic data · prototype for SIH 2026 PS 26014 · not a legal opinion or a certified record
+        Synthetic data · prototype · not a legal opinion or a certified record
       </div>
       <header className="bg-navy text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">

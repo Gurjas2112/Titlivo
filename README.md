@@ -9,8 +9,7 @@
 ![AWS](https://img.shields.io/badge/AWS-ap--south--1%20Mumbai-FF9900)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> Built for **Smart India Hackathon 2026, PS 26014** ("Land Stack": an integrated GIS-based digital public infrastructure for land governance) and **PS 26019** (research and policy knowledge platform), Ministry of Rural Development, Department of Land Resources.
-> Also a portfolio project for the **Associate Solutions Engineer** role at **[Landeed](https://www.landeed.com/) (YC S22)**, Hyderabad.
+> A portfolio project for the **Associate Solutions Engineer** role at **[Landeed](https://www.landeed.com/) (YC S22)**, Hyderabad.
 
 ---
 
