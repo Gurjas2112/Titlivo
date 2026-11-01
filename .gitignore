@@ -1,0 +1,39 @@
+# Secrets and local config — never commit
+project_config.txt
+.env
+.env.*
+!.env.example
+!.env.prod.example
+*.pem
+*.key
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+.pnpm-store/
+
+# Data and generated media
+data/
+demo-media/recordings/
+demo-media/video/*.mp4
+video/public/bg/
+video/public/vo/
+*.webm
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
