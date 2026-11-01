@@ -51,7 +51,7 @@ F06:
     en: "{sales_in_window} sales were registered between {window_start} and {window_end} (entries {mutation_nos})."
     hi: "{window_start} से {window_end} के बीच {sales_in_window} बिक्री दर्ज हुईं।"
 F11:
-  title: "Fraud Sentinel: double sale"
+  title: "Fraud Sentinel: Double sale"
   severity: high
   material: true
   basis: "The same transferor conveyed the parcel twice without reacquiring it"
@@ -59,7 +59,7 @@ F11:
     en: "The same {common_transferors} transferor(s) sold this parcel in entry {first_sale.mutation_no} ({first_sale.registered_on}) and again in entry {second_sale.mutation_no} ({second_sale.registered_on}) without reacquiring it."
     hi: "उन्हीं विक्रेताओं ने यह भूमि प्रविष्टि {first_sale.mutation_no} और फिर {second_sale.mutation_no} में दोबारा बेची।"
 F12:
-  title: "Fraud Sentinel: heir-impersonation transfer"
+  title: "Fraud Sentinel: Heir-impersonation transfer"
   severity: high
   material: true
   basis: "Sale by newly added heirs within 180 days of a succession entry with no death or succession record"
@@ -67,7 +67,7 @@ F12:
     en: "Entry {succession.mutation_no} ({succession.registered_on}) added {succession.heirs_added} heir(s) with no death or succession record, and they sold the parcel {days_between} days later (entry {sale.mutation_no})."
     hi: "प्रविष्टि {succession.mutation_no} में बिना मृत्यु/उत्तराधिकार प्रमाण के {succession.heirs_added} वारिस जोड़े गए और {days_between} दिन बाद उन्होंने भूमि बेच दी।"
 F16:
-  title: "Fraud Sentinel: sale while mortgaged"
+  title: "Fraud Sentinel: Sale while mortgaged"
   severity: high
   material: true
   basis: "Sale registered while an encumbrance was active"

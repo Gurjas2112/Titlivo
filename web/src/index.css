@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+@theme {
+  --font-sans: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Gujarati', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --color-navy: #0b1736;
+  --color-navy-2: #14244f;
+  --color-ink: #0f172a;
+  --color-mint: #2ec4a6;
+  --color-mint-soft: #dff7f1;
+  --color-saffron: #ff7a00;
+  --color-saffron-soft: #fff1e3;
+  --color-danger: #d92d20;
+  --color-danger-soft: #fdecea;
+  --color-amber: #f5a524;
+  --color-paper: #f6f7fb;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  @apply bg-paper text-ink antialiased;
+}
+:lang(mr),
+:lang(hi) {
+  font-family: 'Noto Sans Devanagari', var(--font-sans);
+}
+:lang(kn) {
+  font-family: 'Noto Sans Kannada', var(--font-sans);
+}
+:lang(gu) {
+  font-family: 'Noto Sans Gujarati', var(--font-sans);
+}
+@utility card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-navy text-white hover:bg-navy-2;
+}
+@utility btn-ghost {
+  @apply btn border border-slate-300 bg-white text-ink hover:bg-slate-50;
+}
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+}

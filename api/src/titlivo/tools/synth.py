@@ -149,6 +149,7 @@ class ParcelHistory:
     tenure: str = ""
     area_factor: float = 1.0
     remarks: str = ""
+    names: set[str] = field(default_factory=set)  # names are unique within one parcel
 
 
 class Gen:
@@ -163,8 +164,10 @@ class Gen:
             if n not in self.used_names:
                 self.used_names.add(n)
                 return n
+        if surname is not None:  # family ran out of given names: use any surname
+            return self.name(state)
         self.counter += 1
-        return f"{self.r.choice(GIVEN[state])} {surname or self.r.choice(SURNAMES[state])} {self.counter}"
+        return f"{self.r.choice(GIVEN[state])} {self.r.choice(SURNAMES[state])} {self.counter}"
 
     def date_between(self, a: date, b: date) -> date:
         return a + timedelta(days=self.r.randint(0, max(0, (b - a).days)))
@@ -197,6 +200,7 @@ class Gen:
     # ---------- histories ----------
     def clean_history(self, state: str, area: float, hero: bool = False) -> ParcelHistory:
         r = self.r
+        self.used_names = set()
         surname = r.choice(SURNAMES[state])
         first = [self.name(state, surname)] + ([self.name(state, surname)] if r.random() < 0.4 else [])
         t = self.date_between(date(1990, 1, 1), date(1996, 12, 31))
@@ -233,10 +237,12 @@ class Gen:
             rel = on + timedelta(days=r.randint(2 * 365, 3 * 365))
             if rel < date(2025, 12, 31):
                 h.encs.append(Enc(r.choice(LENDERS[state]), int(round(self.price(area, on) * 0.4, -4)), on, rel))
+        h.names = self.used_names
         return h
 
     def plant(self, state: str, defect: str, h: ParcelHistory, area: float) -> None:
         r, last = self.r, h.events[-1].on
+        self.used_names = h.names
         if defect in ("F01", "F06", "F11", "F12", "F16"):
             h.encs.clear()  # a planted sale must not fall inside an unrelated mortgage window
         if defect == "F01":
