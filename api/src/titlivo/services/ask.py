@@ -15,6 +15,11 @@ from titlivo.services import parcels, units
 from titlivo.settings import get_settings
 
 BANNED = re.compile(r"\b(safe|clear title|guarantee[ds]?|legal opinion|risk[- ]free)\b", re.IGNORECASE)
+NEGATED = re.compile(
+    r"\b(?:not|never|cannot|can't|no)\s+(?:be\s+)?(?:a\s+|an\s+|say\s+(?:it\s+is\s+|that\s+it\s+is\s+)?)?"
+    r"(?:safe|clear title|guarantee[ds]?|legal opinion|risk[- ]free)\b",
+    re.IGNORECASE,
+)
 LANGS = {"en": "English", "hi": "Hindi", "mr": "Marathi", "kn": "Kannada", "gu": "Gujarati"}
 INTENTS = {
     "loan": r"loan|mortgag|charge|encumb|bank|कर्ज|बोजा|ऋण|गिरवी|ಸಾಲ|ಅಡಮಾನ|ಋಣ|લોન|ગીરો|બોજ",
@@ -59,8 +64,10 @@ def _numbers(text: str) -> set[str]:
 def grounding_check(answer: str, fact_blob: str) -> list[str]:
     allowed = _numbers(fact_blob)
     violations = [f"number not in records: {n}" for n in sorted(_numbers(answer) - allowed) if len(n) > 1]
-    if BANNED.search(answer):
-        violations.append(f"banned wording: {BANNED.search(answer).group(0)}")  # type: ignore[union-attr]
+    # Disclaimers are allowed: "not a legal opinion", "not guaranteed", "cannot say it is safe".
+    affirmative = NEGATED.sub("", answer)
+    if m := BANNED.search(affirmative):
+        violations.append(f"banned wording: {m.group(0)}")
     return violations
 
 
@@ -165,7 +172,8 @@ def answer(question: str, parcel_id: str, lang: str, caller: Caller) -> dict[str
             try:
                 text = _llm(question, f, lang, feedback)
             except Exception as e:  # noqa: BLE001 — network, quota, model errors → template fallback
-                attempts.append({"error": type(e).__name__})
+                # e.g. 402 when prepaid Gemini credits run out, 429 on rate limits; never the key itself
+                attempts.append({"error": type(e).__name__, "code": getattr(e, "code", None), "status": getattr(e, "status", None)})
                 break
             violations = grounding_check(text, blob)
             attempts.append({"violations": violations})

@@ -38,3 +38,12 @@ def test_cross_script_search(client):
 def test_ask_is_grounded(client, demo):
     r = client.post("/v1/ask", json={"parcel_id": demo["F02"], "question": "Is there a loan on this land?"}).json()
     assert r["grounded"] and "active mortgage" in r["text"]
+
+
+def test_grounding_allows_disclaimers_but_not_claims():
+    from titlivo.services.ask import grounding_check
+
+    facts = '{"survey_no": "214/2", "as_of": "2026-11-01"}'
+    assert grounding_check("No red flags found for 214/2. This is not a legal opinion.", facts) == []
+    assert grounding_check("This land is safe to buy.", facts) == ["banned wording: safe"]
+    assert grounding_check("A loan of ₹3,00,000 is recorded.", facts) == ["number not in records: 300000"]
