@@ -15,6 +15,8 @@
 
 ## See it working
 
+🌐 **Live demo: [main.d2md8dgohc7hhh.amplifyapp.com](https://main.d2md8dgohc7hhh.amplifyapp.com)** · API reference: [/docs](https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com/docs) · issuer: [`did.json`](https://titlivo-api.p7gtxt73pr9fe.ap-south-1.cs.amazonlightsail.com/.well-known/did.json)
+
 ▶️ **[2½-minute walkthrough (MP4)](https://github.com/Gurjas2112/Titlivo/releases/download/demo-media-v1/full-walkthrough.mp4)** · ▶️ **[Live revocation, split screen (25 s)](https://github.com/Gurjas2112/Titlivo/releases/download/demo-media-v1/live-revocation.mp4)** · [all clips](https://github.com/Gurjas2112/Titlivo/releases/tag/demo-media-v1) · [33 screenshots](demo-media/screenshots)
 
 | A fake-heir sale reaches the registry… | …and the passport a bank scanned flips to SUSPENDED |
@@ -283,7 +285,7 @@ The demo media is generated from the running app by Playwright, never hand-edite
 | M13 | Title Passport (signing, status lists, Python + browser verifiers, QR, verifier page) | ✅ Done |
 | M14 | Fraud Sentinel + live monitoring + suspension in one transaction | ✅ F11, F12, F16 · F13–F15, outbox webhooks, share grants, lender inbox next |
 | M15a | Staging on Supabase cloud + secret scanning | gitleaks in CI ✅ · staging next |
-| M15b | Production deploy (AWS Mumbai, lowest-cost: Lightsail containers + Amplify) | In progress |
+| M15b | Production deploy (AWS Mumbai, lowest-cost: Lightsail container + Amplify + Supabase; secrets in SSM; root keys removed; SSO + MFA) | ✅ Live · database moves to Mumbai next |
 | M12 | Docs, Postman collection, Jupyter notebooks | ✅ Postman (23 assertions) · notebooks next |
 | M16 | Demo media: screenshots, walkthrough, clips | ✅ 33 screenshots, 3 videos · 65-item coverage next |
 | M17 | Story film | Planned |

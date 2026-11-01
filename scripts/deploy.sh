@@ -5,6 +5,7 @@
 #
 # Needs: aws sso login --profile titlivo · Docker running · .env.prod with DATABASE_URL (git-ignored).
 # Secrets live in SSM Parameter Store /titlivo/prod/*; nothing secret is printed or committed.
+# Windows AWS CLI ends text output with : every captured value is passed through tr -d ''.
 set -euo pipefail
 export MSYS_NO_PATHCONV=1 AWS_PAGER="" AWS_REGION=ap-south-1 PYTHONUTF8=1
 export AWS_PROFILE="${AWS_PROFILE:-titlivo}"
@@ -18,7 +19,7 @@ WEB_URL="https://main.${APP_ID}.amplifyapp.com"
 SKIP_DATA=0 SKIP_IMAGE=0 SKIP_WEB=0
 for a in "$@"; do case $a in --skip-data) SKIP_DATA=1;; --skip-image) SKIP_IMAGE=1;; --skip-web) SKIP_WEB=1;; esac; done
 
-ssm() { aws ssm get-parameter --name "/titlivo/prod/$1" --with-decryption --query Parameter.Value --output text; }
+ssm() { aws ssm get-parameter --name "/titlivo/prod/$1" --with-decryption --query Parameter.Value --output text | tr -d ''; }
 step() { printf '\n\033[1;36m▶ %s\033[0m\n' "$*"; }
 
 step "Identity"
@@ -44,7 +45,7 @@ if [ $SKIP_IMAGE = 0 ]; then
   docker build -q -f infra/Dockerfile.api -t "$SERVICE:$TAG" .
   PATH="$HOME/bin:$PATH" aws lightsail push-container-image --service-name $SERVICE --label api --image "$SERVICE:$TAG" | tail -1
 fi
-IMAGE=$(aws lightsail get-container-images --service-name $SERVICE --query "containerImages[0].image" --output text)
+IMAGE=$(aws lightsail get-container-images --service-name $SERVICE --query "containerImages[0].image" --output text | tr -d '')
 
 step "Deploy $IMAGE"
 python - "$IMAGE" > "$TEMP/containers.json" <<PY
@@ -67,7 +68,7 @@ aws lightsail create-container-service-deployment --service-name $SERVICE \
   --query "containerService.nextDeployment.version" --output text
 rm -f "$TEMP/containers.json"
 for i in $(seq 1 60); do
-  STATE=$(aws lightsail get-container-service-deployments --service-name $SERVICE --query "deployments[0].state" --output text)
+  STATE=$(aws lightsail get-container-service-deployments --service-name $SERVICE --query "deployments[0].state" --output text | tr -d '')
   echo "  deployment: $STATE"; [ "$STATE" = ACTIVE ] && break; [ "$STATE" = FAILED ] && { echo "Deployment failed; see: aws lightsail get-container-log --service-name $SERVICE --container-name api"; exit 1; }
   sleep 15
 done
@@ -77,11 +78,11 @@ if [ $SKIP_WEB = 0 ]; then
   (cd web && VITE_API_URL="$API_URL" npx vite build --logLevel warn)
   ZIP="$TEMP/titlivo-web.zip"; rm -f "$ZIP"
   (cd web/dist && python -c "import shutil;shutil.make_archive(r'${ZIP%.zip}','zip','.')")
-  read -r JOB URL < <(aws amplify create-deployment --app-id $APP_ID --branch-name main --query "[jobId,zipUploadUrl]" --output text)
+  read -r JOB URL < <(aws amplify create-deployment --app-id $APP_ID --branch-name main --query "[jobId,zipUploadUrl]" --output text | tr -d '')
   curl -sf -X PUT -H "Content-Type: application/zip" --upload-file "$ZIP" "$URL"
   aws amplify start-deployment --app-id $APP_ID --branch-name main --job-id "$JOB" --query "jobSummary.status" --output text
   for i in $(seq 1 40); do
-    S=$(aws amplify get-job --app-id $APP_ID --branch-name main --job-id "$JOB" --query "job.summary.status" --output text)
+    S=$(aws amplify get-job --app-id $APP_ID --branch-name main --job-id "$JOB" --query "job.summary.status" --output text | tr -d '')
     echo "  amplify: $S"; [ "$S" = SUCCEED ] && break; [ "$S" = FAILED ] && exit 1; sleep 6
   done
 fi
