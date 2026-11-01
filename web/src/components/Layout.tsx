@@ -31,7 +31,7 @@ export default function Layout() {
           <NavLink to="/" aria-label="Titlivo home">
             <Logo light />
           </NavLink>
-          <nav className="flex flex-wrap gap-1 text-sm">
+          <nav className="-mx-1 flex w-full gap-1 overflow-x-auto text-sm whitespace-nowrap sm:w-auto">
             {nav.map(([to, label]) => (
               <NavLink
                 key={to}

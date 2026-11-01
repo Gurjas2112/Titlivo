@@ -2,7 +2,9 @@
 
 **A land title that stays alive.** One parcel API across three Indian states, with title chains computed in SQL, cited answers in five languages, and a signed **Title Passport** that flips to SUSPENDED the moment the records show fraud.
 
-![Status](https://img.shields.io/badge/status-spec%20v2.1%20complete%20·%20build%20in%20progress-0B1736)
+![Status](https://img.shields.io/badge/status-working%20prototype-0B1736)
+![Tests](https://img.shields.io/badge/tests-28%20passing-2EC4A6)
+![Flags](https://img.shields.io/badge/red--flag%20recall-100%25-2EC4A6)
 ![Data](https://img.shields.io/badge/data-100%25%20synthetic-FF7A00)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB)
 ![Postgres](https://img.shields.io/badge/PostgreSQL-17%20%2B%20PostGIS%20%2B%20pgvector-336791)
@@ -13,8 +15,30 @@
 
 ---
 
+## See it working
+
+▶️ **[2½-minute walkthrough (MP4)](https://github.com/Gurjas2112/Titlivo/releases/download/demo-media-v1/full-walkthrough.mp4)** · ▶️ **[Live revocation, split screen (25 s)](https://github.com/Gurjas2112/Titlivo/releases/download/demo-media-v1/live-revocation.mp4)** · [all clips](https://github.com/Gurjas2112/Titlivo/releases/tag/demo-media-v1) · [33 screenshots](demo-media/screenshots)
+
+| A fake-heir sale reaches the registry… | …and the passport a bank scanned flips to SUSPENDED |
+|---|---|
+| ![Dossier with F12](demo-media/screenshots/03-red-flags/08-F12.png) | ![Verifier suspended](demo-media/screenshots/07-live-revocation/03-suspended-mobile.png) |
+
+| One search, any script | The record exactly as Maharashtra writes it | Tamper with one field → signature fails |
+|---|---|---|
+| ![Search](demo-media/screenshots/01-home-and-search/01-home.png) | ![Native 7/12](demo-media/screenshots/02-dossier/03-native-record.png) | ![Invalid](demo-media/screenshots/08-tamper/01-invalid-signature.png) |
+
+What works today (all on synthetic data, verified by tests):
+
+- **270 parcels in 6 demo villages across MH, KA and GJ**, generated as native records in Marathi, Kannada and Gujarati with each state's units (hectare-are, acre-gunta, hectare-are-sq m) and date formats, then harmonised by YAML-driven adapters into one schema. The native record is always returned too.
+- **Title chain and 9 red-flag rules in SQL** (chain break, unreleased mortgage, litigation, area mismatch, restricted tenure, flipping, and the Fraud Sentinel patterns double sale, fake heirs, sale while mortgaged). Graded against 72 planted defects: **100 % recall and 100 % precision**.
+- **Title Passport**: a W3C Verifiable Credential (`vc+jwt`, Ed25519, `did:web`) with no names inside, Bitstring Status Lists for live status, verified **in the browser** against published keys. Injecting a registry event re-runs the rules and suspends passports **in one transaction**; open verifiers update in seconds.
+- **REST API** (search in any script, dossier, title chain, flags; masked names for anonymous callers; RFC 9457 errors; `X-Coverage` header; Scalar docs), **MCP server** for AI agents, **Postman collection** (23 assertions passing), **5 storytelling SQL queries**.
+
+---
+
 ## Contents
 
+- [See it working](#see-it-working)
 - [Why I built this for Landeed](#why-i-built-this-for-landeed)
 - [The problem](#the-problem)
 - [What Titlivo does](#what-titlivo-does)
@@ -179,26 +203,29 @@ Details: [spec §15.0](docs/03_Titlivo_Engineering_Specification_v2.1.md#150-env
 ## API in 60 seconds
 
 ```bash
+API=http://localhost:8000
+
 # Search in any script; names are masked for anonymous callers
-curl -s "$API/v1/parcels/search?q=मुळशी+214"
+curl -s "$API/v1/parcels/search?q=214/2"
+curl -s "$API/v1/parcels/search" -G --data-urlencode "q=नितीन भोसले"
 
 # Full dossier: canonical + native record, title chain, flags, coverage
-curl -s "$API/v1/parcels/DEMO-27…" -H "Authorization: Bearer tlv_live_…"
+curl -s "$API/v1/parcels/DEMO-27TEK337Z567G4" -H "Authorization: Bearer $TITLIVO_KEY"
 
-# Red flags only, each with evidence rows and source record IDs
-curl -s "$API/v1/parcels/DEMO-27…/flags"
+# Red flags only, each with evidence and the source record id
+curl -s "$API/v1/parcels/DEMO-27TEK337Z567G4/flags"
 
 # Issue a Title Passport, then verify it (no account needed to verify)
-curl -s -X POST "$API/v1/parcels/DEMO-27…/passports" -H "Authorization: Bearer $JWT"
-curl -s -X POST "$API/v1/passports/verify" -d @passport.jwt
-# → {"status":"LIVE","signature":"valid","issuer":"did:web:…","checks":[…]}
+curl -s -X POST "$API/v1/parcels/DEMO-27TEK337Z567G4/passports"
+curl -s -X POST "$API/v1/passports/verify" -H "Content-Type: application/json" -d '{"jwt":"<token>"}'
+# → {"status":"LIVE","signature":"valid","issuer":"did:web:…", …}
 
 # Live status list and issuer keys
 curl -s "$API/status/1"
 curl -s "$API/.well-known/did.json"
 ```
 
-MCP: `npx @modelcontextprotocol/inspector`, transport *Streamable HTTP*, URL `$API/mcp`, header `Authorization: Bearer tlv_live_…`. The six tools are `search_parcels`, `get_parcel_dossier`, `get_title_chain`, `list_red_flags`, `explain_term` and `search_land_law`.
+MCP: `npx @modelcontextprotocol/inspector`, transport *Streamable HTTP*, URL `$API/mcp/`, header `Authorization: Bearer $TITLIVO_KEY`. Tools today: `search_parcels`, `get_parcel_dossier`, `get_title_chain` and `list_red_flags` (`explain_term` and `search_land_law` arrive with the knowledge base). Or run `uv run --directory api python -m titlivo.tools.mcp_demo`.
 
 Every response carries an `X-Coverage` header. The full endpoint list is in [spec Annexure A](docs/03_Titlivo_Engineering_Specification_v2.1.md#annexure-a-api-reference-summary).
 
@@ -216,13 +243,13 @@ Every response carries an `X-Coverage` header. The full endpoint list is in [spe
 6. **2:15**: Developer view: `curl`, then MCP Inspector → `list_red_flags`. A Karnataka parcel returns the same JSON shape.
 7. **2:40**: Diligence done once, verifiable by anyone, and alive.
 
-The demo media is generated from the running app, never hand-edited:
+Steps 4 (lender sharing) and the lender webhook are on the roadmap; everything else above runs today. The full runbook, including how to reset between runs, is in [docs/runbooks/demo.md](docs/runbooks/demo.md).
 
-- flow-wise screenshots (19 flows);
-- a chaptered full-length walkthrough;
-- a short animated story film.
+The demo media is generated from the running app by Playwright, never hand-edited (`npm run demo:shots`, `demo:record`, `demo:mp4`, `demo:verify`):
 
-A coverage check (`demo:verify`) fails unless all **65** features, screens and states appear in all three.
+- 33 flow-wise screenshots at laptop and phone sizes, with captions in `demo-media/manifest.json`;
+- a chaptered walkthrough, a split-screen live-revocation clip and one clip per chapter;
+- a check that rejects blank or duplicate screenshots.
 
 ---
 
@@ -243,42 +270,44 @@ A coverage check (`demo:verify`) fails unless all **65** features, screens and s
 | # | Milestone | Status |
 |---|---|---|
 | — | Engineering specification v2.1 (production-ready, mapped to provisioned accounts) | ✅ Done |
-| M0 | Scaffold, Makefile, CI, `/healthz` | ⏳ Next |
-| M1 | Migrations, LGD + village polygons, synthetic generator with planted defects | Planned |
-| M2 | Units, transliteration, glossary, three state adapters | Planned |
-| M3 | Title chain SQL + flags F01–F10 + defect-recall gate (100 % recall, ≥ 98 % precision) | Planned |
-| M4 | Auth, masking, REST parcels endpoints | Planned |
-| M5 | Vector tiles (p95 < 150 ms) | Planned |
-| M6 | Web: search, map, dossier, glossary | Planned |
+| M0 | Scaffold, Makefile, CI (ruff, pytest, defect gate, gitleaks), `/healthz` | ✅ Done |
+| M1 | Migrations, synthetic generator with planted defects (6 demo villages, 270 parcels) | ✅ Done · real datameet village polygons next |
+| M2 | Units, transliteration, glossary, three state adapters | ✅ Done |
+| M3 | Title chain SQL + flags + defect gate (100 % recall, 100 % precision) | ✅ F01–F06 · F07–F10 next |
+| M4 | Masking, REST parcels endpoints, problem+json, coverage header | ✅ Demo API keys · Supabase Auth sign-in next |
+| M5 | Vector tiles (p95 < 150 ms) | GeoJSON layer today · MVT next |
+| M6 | Web: search, map, dossier, timeline, flags, Show API call | ✅ Done · glossary page next |
 | M7 | Land-law knowledge base + hybrid search (≥ 90 % section hit) | Planned |
-| M8 | Cited agent + grounding validator + SSE (≥ 97 % grounded) | Planned |
-| M9 | MCP server + parity tests | Planned |
+| M8 | Cited agent + grounding validator | ✅ Grounding check + template fallback · Gemini key, SSE streaming, evals next |
+| M9 | MCP server (4 tools, key auth) | ✅ Done |
 | M10 | Title draft PDF + bulk lookup | Planned |
-| M11 | Red team, admin console, telemetry | Planned |
-| M13 | Title Passport (signing, status lists, Python + browser verifiers) | Planned |
-| M14 | Fraud Sentinel F11–F16, monitoring, outbox, share grants, lender inbox | Planned |
-| M15a | Staging on Supabase cloud + secret scanning | Planned |
-| M15b | AWS production deploy (Mumbai) | Planned |
-| M12 | Docs, Postman workspace, Jupyter notebooks | Planned |
-| M16 | Demo media: 19 flows, full walkthrough, 65/65 coverage | Planned |
+| M11 | Red team, admin console, telemetry | Admin demo panel done · rest planned |
+| M13 | Title Passport (signing, status lists, Python + browser verifiers, QR, verifier page) | ✅ Done |
+| M14 | Fraud Sentinel + live monitoring + suspension in one transaction | ✅ F11, F12, F16 · F13–F15, outbox webhooks, share grants, lender inbox next |
+| M15a | Staging on Supabase cloud + secret scanning | gitleaks in CI ✅ · staging next |
+| M15b | Production deploy (AWS Mumbai, lowest-cost: Lightsail containers + Amplify) | In progress |
+| M12 | Docs, Postman collection, Jupyter notebooks | ✅ Postman (23 assertions) · notebooks next |
+| M16 | Demo media: screenshots, walkthrough, clips | ✅ 33 screenshots, 3 videos · 65-item coverage next |
 | M17 | Story film | Planned |
 
 ---
 
 ## Quickstart (local)
 
-Requirements: Windows 11 + WSL2 Ubuntu 22.04, Docker Engine inside WSL, `uv`, Node 24 + `pnpm`. An NVIDIA GPU is optional; it is used only for knowledge-base ingest.
+Requirements: Docker, [`uv`](https://docs.astral.sh/uv/), Node 22+. Works on Windows (Git Bash), macOS, Linux and WSL.
 
 ```bash
-git clone https://github.com/Gurjas2112/Titlivo.git ~/titlivo && cd ~/titlivo
-cp .env.example .env && make keys          # local Ed25519 passport key + Fernet key
-pnpm supabase start && pnpm supabase db reset
-make lgd-load villages synth SEED=42 ingest
-docker compose -f infra/docker-compose.dev.yml up -d otel-lgtm mailpit
-make dev    # API :8000 (/docs, /mcp) · web :5173 · Mailpit :8025 · Grafana :3000
+git clone https://github.com/Gurjas2112/Titlivo.git && cd Titlivo
+cp .env.example .env
+make db          # PostGIS on :54329
+make keys        # Ed25519 passport signing key + demo API keys → .env (git-ignored)
+make data        # generate synthetic records → migrate → ingest → defect gate
+make test        # 28 tests
+make api         # API on :8000  (docs at /docs, MCP at /mcp/)
+cd web && npm install && npm run dev   # web on :5173
 ```
 
-Step-by-step installation with checks after each stage: [spec §12.3](docs/03_Titlivo_Engineering_Specification_v2.1.md#123-installation-gated).
+Your developer key (`DEMO_API_KEY`) and admin key (`ADMIN_API_KEY`) are in `.env`. The admin key unlocks the "Admin demo" page. Step-by-step set-up for the full system: [spec §12.3](docs/03_Titlivo_Engineering_Specification_v2.1.md#123-installation-gated).
 
 ## Production deployment
 
@@ -301,12 +330,17 @@ The runbook separates account-owner actions (H1–H9) from commands a coding age
 | [Engineering specification v2.1](docs/03_Titlivo_Engineering_Specification_v2.1.md) | **Current baseline**: requirements, architecture, data model, security, environments, AWS runbook, test strategy, demo plan, 65-item coverage matrix |
 | [Engineering specification v2.0](docs/02_Titlivo_Engineering_Specification_v2.0.md) | Previous baseline, kept for history |
 
-Planned with the build: `docs/quickstart.md`, `docs/mcp.md`, `docs/integrate-lender.md`, `docs/security-faq.md`, `docs/model-card.md`, `docs/errors.md`, `docs/adr/`, `docs/runbooks/`, the Postman collection and `notebooks/`.
+| [Demo runbook](docs/runbooks/demo.md) | How to run, present and reset the 3-minute demo |
+| [Postman collection](postman/) | 18 requests with tests, local environment |
+| [Storytelling SQL](sql/demo/) | 5 queries a lender, buyer or analyst would ask |
+| [ADR-0001](docs/adr/0001-ed25519-algorithm-name.md) | Why the passport header says `Ed25519` rather than `EdDSA` |
+
+Planned with the build: `docs/mcp.md`, `docs/integrate-lender.md`, `docs/security-faq.md`, `docs/model-card.md` and `notebooks/`.
 
 ## Data, licences and disclaimer
 
 - **All parcel, owner and transaction data is synthetic.** IDs start with `DEMO-`, and every record carries `synthetic: true`.
-- Village boundaries come from datameet (**ODbL**); attribution is shown on the map, and derived data is shared under the same terms.
+- The six villages and their parcel boundaries are generated (fictional villages at plausible locations, marked "demo"). Real village boundaries from datameet (ODbL) are on the roadmap. Basemap © OpenStreetMap contributors, OpenFreeMap.
 - Titlivo is a prototype. A Title Passport attests only to the records Titlivo has seen. It is **not** a guarantee, a certificate of title, a legal digital signature or a legal opinion.
 - Code is under the [MIT License](LICENSE).
 

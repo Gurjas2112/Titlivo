@@ -8,7 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "demo:shots": "node e2e/demo/shots.mjs",
+    "demo:record": "node e2e/demo/record.mjs",
+    "demo:mp4": "node e2e/demo/mp4.mjs",
+    "demo:verify": "uv run --directory ../api python -m titlivo.tools.check_shots"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

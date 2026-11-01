@@ -1,0 +1,271 @@
+{
+ "generated_at": "2026-11-01T13:36:10.811Z",
+ "seed": 42,
+ "synthetic": true,
+ "shots": [
+  {
+   "flow": "01-home-and-search",
+   "step": "01-home",
+   "file": "screenshots/01-home-and-search/01-home.png",
+   "title": "Home",
+   "caption": "One search box for any script; the map shows the six demo villages across three states.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "01-home-and-search",
+   "step": "02-search-survey",
+   "file": "screenshots/01-home-and-search/02-search-survey.png",
+   "title": "Search by survey number",
+   "caption": "Survey 214/2 found in Maharashtra and Gujarat with the same canonical shape.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "01-home-and-search",
+   "step": "03-search-devanagari",
+   "file": "screenshots/01-home-and-search/03-search-devanagari.png",
+   "title": "Search an owner name in Devanagari",
+   "caption": "Cross-script search: the Marathi name finds the same parcel as \"Nitin Bhosale\".",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "01-home-and-search",
+   "step": "04-home",
+   "file": "screenshots/01-home-and-search/04-home-mobile.png",
+   "title": "Home on a phone",
+   "caption": "The same app on a 390 px phone screen.",
+   "viewport": "mobile"
+  },
+  {
+   "flow": "02-dossier",
+   "step": "01-dossier",
+   "file": "screenshots/02-dossier/01-dossier.png",
+   "title": "Parcel dossier",
+   "caption": "Survey 214/2: map, identity, \"No red flags found in the records available to Titlivo\" with coverage.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "02-dossier",
+   "step": "02-dossier-full",
+   "file": "screenshots/02-dossier/02-dossier-full.png",
+   "title": "Full dossier",
+   "caption": "Chain of title, mortgages, passport, Ask and the API call on one page.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "02-dossier",
+   "step": "03-native-record",
+   "file": "screenshots/02-dossier/03-native-record.png",
+   "title": "The native 7/12 record",
+   "caption": "The record exactly as Maharashtra writes it: Marathi keys, Devanagari numerals, hectare-are units.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "02-dossier",
+   "step": "04-title-chain",
+   "file": "screenshots/02-dossier/04-title-chain.png",
+   "title": "Chain of title",
+   "caption": "Computed in SQL: every transfer checked against the holders recorded at the time.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "01-F01",
+   "file": "screenshots/03-red-flags/01-F01.png",
+   "title": "Red flag F01",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "02-F02",
+   "file": "screenshots/03-red-flags/02-F02.png",
+   "title": "Red flag F02",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "03-F03",
+   "file": "screenshots/03-red-flags/03-F03.png",
+   "title": "Red flag F03",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "04-F04",
+   "file": "screenshots/03-red-flags/04-F04.png",
+   "title": "Red flag F04",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "05-F05",
+   "file": "screenshots/03-red-flags/05-F05.png",
+   "title": "Red flag F05",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "06-F06",
+   "file": "screenshots/03-red-flags/06-F06.png",
+   "title": "Red flag F06",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "07-F11",
+   "file": "screenshots/03-red-flags/07-F11.png",
+   "title": "Red flag F11",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "08-F12",
+   "file": "screenshots/03-red-flags/08-F12.png",
+   "title": "Red flag F12",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "09-F16",
+   "file": "screenshots/03-red-flags/09-F16.png",
+   "title": "Red flag F16",
+   "caption": "Plain-language text built only from the SQL evidence, with the source record id.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "03-red-flags",
+   "step": "10-F12-timeline",
+   "file": "screenshots/03-red-flags/10-F12-timeline.png",
+   "title": "Fake heirs on the timeline",
+   "caption": "Heirs added with no death record, then a sale weeks later: the Keesara pattern.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "04-ask",
+   "step": "01-loan-answer",
+   "file": "screenshots/04-ask/01-loan-answer.png",
+   "title": "Ask the property",
+   "caption": "Answer grounded in the records, with citations; never says \"safe\".",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "05-title-passport",
+   "step": "01-passport-card",
+   "file": "screenshots/05-title-passport/01-passport-card.png",
+   "title": "Title Passport issued",
+   "caption": "A signed W3C Verifiable Credential with QR; no owner names inside.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "06-verifier",
+   "step": "01-live-desktop",
+   "file": "screenshots/06-verifier/01-live-desktop.png",
+   "title": "Public verifier: LIVE",
+   "caption": "Anyone can verify: signature and live status checked in the browser, no login.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "06-verifier",
+   "step": "02-live",
+   "file": "screenshots/06-verifier/02-live-mobile.png",
+   "title": "Verifier on a phone: LIVE",
+   "caption": "What a bank officer sees after scanning the QR.",
+   "viewport": "mobile"
+  },
+  {
+   "flow": "07-live-revocation",
+   "step": "01-admin-panel",
+   "file": "screenshots/07-live-revocation/01-admin-panel.png",
+   "title": "Admin: inject a registry event",
+   "caption": "Simulates a new entry from the registration or revenue system.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "07-live-revocation",
+   "step": "02-injected",
+   "file": "screenshots/07-live-revocation/02-injected.png",
+   "title": "Event injected",
+   "caption": "Fraud Sentinel raised F12; the passport was suspended in the same transaction.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "07-live-revocation",
+   "step": "03-suspended",
+   "file": "screenshots/07-live-revocation/03-suspended-mobile.png",
+   "title": "Verifier: SUSPENDED",
+   "caption": "The same QR now shows SUSPENDED with the reason.",
+   "viewport": "mobile"
+  },
+  {
+   "flow": "07-live-revocation",
+   "step": "04-dossier-after",
+   "file": "screenshots/07-live-revocation/04-dossier-after.png",
+   "title": "Dossier after the event",
+   "caption": "The new heir entries and the F12 flag appear on the parcel.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "08-tamper",
+   "step": "01-invalid-signature",
+   "file": "screenshots/08-tamper/01-invalid-signature.png",
+   "title": "Tampered passport",
+   "caption": "Changing one field breaks the Ed25519 signature: INVALID SIGNATURE.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "09-developers",
+   "step": "01-developers",
+   "file": "screenshots/09-developers/01-developers.png",
+   "title": "Developers",
+   "caption": "Quickstart with curl, MCP set-up and how to verify passports independently.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "09-developers",
+   "step": "02-api-reference",
+   "file": "screenshots/09-developers/02-api-reference.png",
+   "title": "Interactive API reference",
+   "caption": "OpenAPI 3.1 rendered with Scalar.",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "10-proof",
+   "step": "01-mcp",
+   "file": "screenshots/10-proof/01-mcp.png",
+   "title": "MCP: an AI agent calls Titlivo",
+   "caption": "Captured from the real command: uv run python -m titlivo.tools.mcp_demo",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "10-proof",
+   "step": "02-defect-gate",
+   "file": "screenshots/10-proof/02-defect-gate.png",
+   "title": "Defect gate: planted vs detected",
+   "caption": "Captured from the real command: make check",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "10-proof",
+   "step": "03-tests",
+   "file": "screenshots/10-proof/03-tests.png",
+   "title": "Test suite",
+   "caption": "Captured from the real command: uv run pytest",
+   "viewport": "desktop"
+  },
+  {
+   "flow": "10-proof",
+   "step": "04-postman",
+   "file": "screenshots/10-proof/04-postman.png",
+   "title": "Postman collection (newman)",
+   "caption": "Captured from the real command: newman run postman/titlivo.postman_collection.json",
+   "viewport": "desktop"
+  }
+ ]
+}

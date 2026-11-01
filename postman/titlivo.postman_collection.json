@@ -1,0 +1,648 @@
+{
+ "info": {
+  "name": "Titlivo API (synthetic demo)",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+  "description": "One canonical parcel API across Maharashtra, Karnataka and Gujarat, plus Title Passports. All data is synthetic. Set baseUrl and apiKey in the environment."
+ },
+ "variable": [
+  {
+   "key": "baseUrl",
+   "value": "http://localhost:8000"
+  },
+  {
+   "key": "apiKey",
+   "value": ""
+  },
+  {
+   "key": "parcelId",
+   "value": "DEMO-27TEK337Z567G4"
+  },
+  {
+   "key": "jwt",
+   "value": ""
+  }
+ ],
+ "item": [
+  {
+   "name": "1 · Discover",
+   "item": [
+    {
+     "name": "Health",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/healthz",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "healthz"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('200 ok', () => pm.response.to.have.status(200));",
+         "pm.test('has X-Coverage', () => pm.response.to.have.header('X-Coverage'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coverage",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/coverage",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "coverage"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('three states', () => pm.expect(pm.response.json().by_state.length).to.eql(3));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Demo parcels (one per red flag)",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/demo/parcels",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "demo",
+        "parcels"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "const d = pm.response.json();",
+         "pm.collectionVariables.set('parcelId', d.hero);",
+         "pm.test('hero parcel', () => pm.expect(d.hero).to.match(/^DEMO-/));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2 · Parcels",
+   "item": [
+    {
+     "name": "Search by survey number",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/search?q=214/2",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "search"
+       ],
+       "query": [
+        {
+         "key": "q",
+         "value": "214/2"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('found 214/2', () => pm.expect(pm.response.json().results.map(r => r.survey_no)).to.include('214/2'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Search by owner name in Devanagari",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/search?q=नितीन भोसले",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "search"
+       ],
+       "query": [
+        {
+         "key": "q",
+         "value": "नितीन भोसले"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('cross-script match', () => pm.expect(pm.response.json().results.length).to.be.above(0));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Dossier (anonymous: names masked)",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/{{parcelId}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "{{parcelId}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "const d = pm.response.json();",
+         "pm.test('canonical + native', () => { pm.expect(d.canonical).to.be.an('object'); pm.expect(d.native.record).to.be.an('object'); });",
+         "pm.test('names masked', () => pm.expect(d.names_masked).to.eql(true));",
+         "pm.test('never says safe', () => pm.expect(d.summary.toLowerCase()).to.not.include('safe'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Dossier (API key: names visible)",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Authorization",
+        "value": "Bearer {{apiKey}}"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/{{parcelId}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "{{parcelId}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('names visible with parcels:pii', () => pm.expect(pm.response.json().names_masked).to.eql(false));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Title chain",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/{{parcelId}}/title-chain",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "{{parcelId}}",
+        "title-chain"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('ordered events', () => pm.expect(pm.response.json().events[0].event_type).to.eql('grant'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Red flags",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/{{parcelId}}/flags",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "{{parcelId}}",
+        "flags"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('flags array', () => pm.expect(pm.response.json().flags).to.be.an('array'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Not found → problem+json",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/DEMO-NOPE",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "DEMO-NOPE"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('404', () => pm.response.to.have.status(404));",
+         "pm.test('RFC 9457', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('problem+json'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Ask the property",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/v1/ask",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "ask"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"parcel_id\": \"{{parcelId}}\",\n  \"question\": \"Is there a loan on this land?\"\n}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('grounded', () => pm.expect(pm.response.json().grounded).to.eql(true));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "3 · Title Passport",
+   "item": [
+    {
+     "name": "Issue passport",
+     "request": {
+      "method": "POST",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/v1/parcels/{{parcelId}}/passports",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "parcels",
+        "{{parcelId}}",
+        "passports"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "const p = pm.response.json();",
+         "pm.collectionVariables.set('jwt', p.jwt);",
+         "pm.collectionVariables.set('passportId', p.id);",
+         "pm.test('201', () => pm.response.to.have.status(201));",
+         "pm.test('vc+jwt', () => pm.expect(p.jwt.split('.').length).to.eql(3));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Verify passport → LIVE",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/v1/passports/verify",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "passports",
+        "verify"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"jwt\": \"{{jwt}}\"\n}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('LIVE', () => pm.expect(pm.response.json().status).to.eql('LIVE'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Issuer DID document",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/.well-known/did.json",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        ".well-known",
+        "did.json"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Ed25519 key', () => pm.expect(pm.response.json().verificationMethod[0].publicKeyJwk.crv).to.eql('Ed25519'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Suspension status list",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": {
+       "raw": "{{baseUrl}}/status/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "status",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('signed status list', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('vc+jwt'));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "4 · Live revocation (admin key)",
+   "item": [
+    {
+     "name": "Inject: sale by newly added heirs (F12)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Authorization",
+        "value": "Bearer {{apiKey}}"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/v1/admin/events",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "admin",
+        "events"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"parcel_id\": \"{{parcelId}}\",\n  \"preset\": \"heir_impersonation\"\n}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('F12 raised', () => pm.expect(pm.response.json().new_material_flags).to.include('F12'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Verify again → SUSPENDED",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/v1/passports/verify",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "passports",
+        "verify"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"jwt\": \"{{jwt}}\"\n}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('SUSPENDED', () => pm.expect(pm.response.json().status).to.eql('SUSPENDED'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Reset demo",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Authorization",
+        "value": "Bearer {{apiKey}}"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/v1/admin/demo/reset",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "v1",
+        "admin",
+        "demo",
+        "reset"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"parcel_id\": \"{{parcelId}}\"\n}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('reinstated', () => pm.expect(pm.response.json().reinstated_passports.length).to.be.above(0));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

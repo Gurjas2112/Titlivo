@@ -80,8 +80,9 @@ export async function verifyPassport(jwt: string, bust = false, now = new Date()
   }
   for (const entry of cred.credentialStatus ?? []) {
     try {
+      // Always revalidate (ETag → cheap 304) so a reload never shows a stale LIVE status.
       const url = entry.statusListCredential + (bust ? `?t=${Date.now()}` : '')
-      const res = await fetch(url, { cache: bust ? 'no-store' : 'default' })
+      const res = await fetch(url, { cache: bust ? 'no-store' : 'no-cache' })
       const sl = await verifyJws(await res.text(), false)
       if (sl.credentialSubject.statusPurpose !== entry.statusPurpose) throw new Error('status purpose mismatch')
       const bits = await decodeList(sl.credentialSubject.encodedList)

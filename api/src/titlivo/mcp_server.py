@@ -29,7 +29,7 @@ def _caller() -> Caller:
 
 @mcp.tool()
 def search_parcels(query: str, limit: int = 10) -> list[dict[str, Any]]:
-    """Find parcels by survey number (e.g. "214/2"), owner name in any script (Latin, Devanagari,
+    """Find parcels by survey number (for example "214/2"), owner name in any script (Latin, Devanagari,
     Kannada, Gujarati) or village name. Returns parcel ids to pass to the other tools."""
     return parcels.search(query, _caller(), limit=min(limit, 50))
 
